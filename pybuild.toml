@@ -1,0 +1,8 @@
+[sources]
+include = ["src/blcore/**/*.cpp", "src/blcore/**/*.h"]
+exclude = []
+
+[[package]]
+include = ["blcore.dll", "blcore.pdb"]
+exclude = []
+dest = "Binaries/Plugins"
