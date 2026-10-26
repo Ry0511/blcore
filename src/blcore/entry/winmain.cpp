@@ -17,9 +17,9 @@ namespace blcore {
 namespace {
 
 DWORD WINAPI startup_thread(LPVOID h_module) {
-    logging::initialise();
     logging::set_console_logging(true);
     logging::add_log_file(util::module_dir(h_module) / "blcore.log");
+    logging::initialise();
     logging::log(logging::Level::Info, get_version_string());
     return 0;
 }

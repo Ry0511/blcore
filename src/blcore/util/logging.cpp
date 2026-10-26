@@ -203,12 +203,18 @@ void add_log_file(const fs::path& out, bool append) {
     files.push_back(std::move(file));
 }
 
-void log(Level level, const std::string& msg) {
-    enqueue(level, std::string{msg});
-}
-
-void log(Level level, const std::wstring& msg) {
-    enqueue(level, util::narrow(msg));
-}
-
 }  // namespace blcore::logging
+
+////////////////////////////////////////////////////////////////////////////////
+// | EXPORTS |
+////////////////////////////////////////////////////////////////////////////////
+
+BLCORE_API_FN(void, blcore_log, blcore::logging::Level level, const char* msg, std::size_t len) {
+    const std::string_view view{msg, len};
+    blcore::logging::enqueue(level, std::string{view});
+}
+
+BLCORE_API_FN(void, blcore_log_wide, blcore::logging::Level level, const wchar_t* msg, std::size_t len) {
+    const std::wstring_view view{msg, len};
+    blcore::logging::enqueue(level, blcore::util::narrow(view));
+}
