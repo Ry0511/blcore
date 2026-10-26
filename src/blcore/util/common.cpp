@@ -25,6 +25,22 @@ fs::path module_dir(void* module) {
     }.parent_path();
 }
 
+void* load_library(const fs::path& path) {
+    return LoadLibraryExW(
+        path.c_str(),
+        nullptr,
+        LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    );
+}
+
+void* get_proc_address(void* module, const char* name) {
+    return reinterpret_cast<void*>(GetProcAddress(static_cast<HMODULE>(module), name));
+}
+
+void free_library(void* module) {
+    FreeLibrary(static_cast<HMODULE>(module));
+}
+
 // NOLINTBEGIN(bugprone-suspicious-stringview-data-usage)
 std::string narrow(std::wstring_view str) {
     if (str.empty()) {

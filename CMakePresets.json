@@ -49,11 +49,26 @@
       }
     },
     {
+      "name": "_willow",
+      "hidden": true,
+      "cacheVariables": {
+        "BLCORE_FLAVOUR": "WILLOW"
+      }
+    },
+    {
+      "name": "_willow64",
+      "hidden": true,
+      "cacheVariables": {
+        "BLCORE_FLAVOUR": "WILLOW64"
+      }
+    },
+    {
       "name": "msvc-x86-dbg",
       "inherits": [
         "_base",
         "_clion_msvc_x86",
-        "_debug"
+        "_debug",
+        "_willow"
       ]
     },
     {
@@ -61,7 +76,8 @@
       "inherits": [
         "_base",
         "_clion_msvc_x86",
-        "_release"
+        "_release",
+        "_willow"
       ]
     },
     {
@@ -69,7 +85,8 @@
       "inherits": [
         "_base",
         "_clion_msvc_x64",
-        "_debug"
+        "_debug",
+        "_willow64"
       ]
     },
     {
@@ -77,7 +94,8 @@
       "inherits": [
         "_base",
         "_clion_msvc_x64",
-        "_release"
+        "_release",
+        "_willow64"
       ]
     }
   ]
