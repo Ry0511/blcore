@@ -17,11 +17,12 @@ concept FunctionPointer = std::is_pointer_v<Fn> && std::is_function_v<std::remov
 
 template <FunctionPointer Fn>
 bool create(void* target, Fn detour, Fn* original = nullptr) {
-    return blcore_hook_create(
+    const ApiResult result = blcore_hook_create(
         target,
         reinterpret_cast<void*>(detour),
         reinterpret_cast<void**>(original)
     );
+    return result == API_OK;
 }
 
 template <FunctionPointer Fn>
@@ -32,7 +33,7 @@ bool create_export(
     Fn* original = nullptr,
     void** out_target = nullptr
 ) {
-    return blcore_hook_create_export(
+    const ApiResult result = blcore_hook_create_export(
         module.data(),
         module.size(),
         name.data(),
@@ -41,18 +42,19 @@ bool create_export(
         reinterpret_cast<void**>(original),
         out_target
     );
+    return result == API_OK;
 }
 
 inline bool remove(void* target) {
-    return blcore_hook_remove(target);
+    return blcore_hook_remove(target) == API_OK;
 }
 
 inline bool enable(void* target) {
-    return blcore_hook_enable(target);
+    return blcore_hook_enable(target) == API_OK;
 }
 
 inline bool disable(void* target) {
-    return blcore_hook_disable(target);
+    return blcore_hook_disable(target) == API_OK;
 }
 
 template <FunctionPointer Fn>

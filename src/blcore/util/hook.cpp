@@ -18,19 +18,19 @@ namespace {
 
 using MinHookFn = MH_STATUS(WINAPI*)(LPVOID target);
 
-bool apply(std::string_view action, MinHookFn fn, void* target) {
+blcore::ApiResult apply(std::string_view action, MinHookFn fn, void* target) {
     if (target == nullptr) {
         BLCORE_ERROR("Can't {} a hook with a null target", action);
-        return false;
+        return blcore::API_FAIL;
     }
 
     const MH_STATUS status = fn(target);
     if (status != MH_OK) {
         BLCORE_ERROR("Failed to {} hook at {}: {}", action, target, MH_StatusToString(status));
-        return false;
+        return blcore::API_FAIL;
     }
 
-    return true;
+    return blcore::API_OK;
 }
 
 }  // namespace
@@ -39,23 +39,23 @@ bool apply(std::string_view action, MinHookFn fn, void* target) {
 // | EXPORTS |
 ////////////////////////////////////////////////////////////////////////////////
 
-BLCORE_API_FN(bool, blcore_hook_create, void* target, void* detour, void** original) {
+BLCORE_API_FN(blcore::ApiResult, blcore_hook_create, void* target, void* detour, void** original) {
     if (target == nullptr || detour == nullptr) {
         BLCORE_ERROR("Can't create a hook with a null target or detour");
-        return false;
+        return blcore::API_FAIL;
     }
 
     const MH_STATUS status = MH_CreateHook(target, detour, original);
     if (status != MH_OK) {
         BLCORE_ERROR("Failed to create hook at {}: {}", target, MH_StatusToString(status));
-        return false;
+        return blcore::API_FAIL;
     }
 
-    return true;
+    return blcore::API_OK;
 }
 
 BLCORE_API_FN(
-    bool,
+    blcore::ApiResult,
     blcore_hook_create_export,
     const wchar_t* module,
     std::size_t module_len,
@@ -67,7 +67,7 @@ BLCORE_API_FN(
 ) {
     if (module == nullptr || name == nullptr || detour == nullptr) {
         BLCORE_ERROR("Can't create an export hook with a null module, name or detour");
-        return false;
+        return blcore::API_FAIL;
     }
 
     const std::wstring module_str{module, module_len};
@@ -89,23 +89,23 @@ BLCORE_API_FN(
             name_str,
             MH_StatusToString(status)
         );
-        return false;
+        return blcore::API_FAIL;
     }
 
     if (out_target != nullptr) {
         *out_target = target;
     }
-    return true;
+    return blcore::API_OK;
 }
 
-BLCORE_API_FN(bool, blcore_hook_remove, void* target) {
+BLCORE_API_FN(blcore::ApiResult, blcore_hook_remove, void* target) {
     return apply("remove", &MH_RemoveHook, target);
 }
 
-BLCORE_API_FN(bool, blcore_hook_enable, void* target) {
+BLCORE_API_FN(blcore::ApiResult, blcore_hook_enable, void* target) {
     return apply("enable", &MH_EnableHook, target);
 }
 
-BLCORE_API_FN(bool, blcore_hook_disable, void* target) {
+BLCORE_API_FN(blcore::ApiResult, blcore_hook_disable, void* target) {
     return apply("disable", &MH_DisableHook, target);
 }

@@ -29,11 +29,11 @@ struct PluginApi_v1 {
 
 }  // namespace blcore
 
-BLCORE_API_FN(bool, blcore_register_plugin_api_v1, blcore::PluginHandle* handle, const blcore::PluginApi_v1* api);
+BLCORE_API_FN(blcore::ApiResult, blcore_register_plugin_api_v1, blcore::PluginHandle* handle, const blcore::PluginApi_v1* api);
 
 // NOLINTBEGIN(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
 #define BLCORE_PLUGIN_ENTRY(handle) \
-    extern "C" BLCORE_EXPORT bool BLCORE_CALL blcore_plugin_entry(::blcore::PluginHandle* handle) noexcept(false)
+    extern "C" BLCORE_EXPORT ::blcore::ApiResult BLCORE_CALL blcore_plugin_entry(::blcore::PluginHandle* handle) noexcept(false)
 // NOLINTEND(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
 
 #endif  // BLCORE_PLUGIN_API_V1_H

@@ -6,11 +6,11 @@
 #include <cstddef>
 
 // hook an arbitrary function
-BLCORE_API_FN(bool, blcore_hook_create, void* target, void* detour, void** original);
+BLCORE_API_FN(blcore::ApiResult, blcore_hook_create, void* target, void* detour, void** original);
 
 // hook an exported module function by name
 BLCORE_API_FN(
-    bool,
+    blcore::ApiResult,
     blcore_hook_create_export,
     const wchar_t* module,
     std::size_t module_len,
@@ -21,8 +21,8 @@ BLCORE_API_FN(
     void** out_target
 );
 
-BLCORE_API_FN(bool, blcore_hook_remove, void* target);
-BLCORE_API_FN(bool, blcore_hook_enable, void* target);
-BLCORE_API_FN(bool, blcore_hook_disable, void* target);
+BLCORE_API_FN(blcore::ApiResult, blcore_hook_remove, void* target);
+BLCORE_API_FN(blcore::ApiResult, blcore_hook_enable, void* target);
+BLCORE_API_FN(blcore::ApiResult, blcore_hook_disable, void* target);
 
 #endif  // BLCORE_API_HOOK_H

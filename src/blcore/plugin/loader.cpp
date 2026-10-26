@@ -13,7 +13,7 @@ namespace blcore {
 namespace {
 
 constexpr auto ENTRY_NAME = "blcore_plugin_entry";
-using EntryFn = bool(BLCORE_CALL*)(PluginHandle* handle) noexcept(false);
+using EntryFn = ApiResult(BLCORE_CALL*)(PluginHandle* handle) noexcept(false);
 
 std::vector<std::unique_ptr<PluginHandle>> plugins;
 
@@ -58,15 +58,15 @@ std::unique_ptr<PluginHandle> load_plugin(const fs::path& path) {
         return nullptr;
     };
 
-    bool accepted = false;
+    ApiResult result{API_FAIL};
     bool success = util::invoke_guarded(
         file,
-        [&accepted, &entry, &handle] {
-            accepted = entry(handle.get());
+        [&result, &entry, &handle] {
+            result = entry(handle.get());
         }
     );
 
-    if (!success || !accepted || !handle->plugin_api_v1.has_value()) {
+    if (!success || result != API_OK || !handle->plugin_api_v1.has_value()) {
         BLCORE_INFO("{} failed to load", file);
         return unload();
     }

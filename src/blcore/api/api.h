@@ -1,6 +1,8 @@
 #ifndef BLCORE_API_API_H
 #define BLCORE_API_API_H
 
+#include <cstdint>
+
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
 
 #define BLCORE_CALL __cdecl
@@ -17,5 +19,14 @@
     extern "C" BLCORE_API ret BLCORE_CALL name(__VA_ARGS__) noexcept(false)
 
 // NOLINTEND(cppcoreguidelines-macro-usage)
+
+namespace blcore {
+
+using ApiResult = std::uint32_t;
+
+inline constexpr ApiResult API_OK = 0;
+inline constexpr ApiResult API_FAIL = 1;
+
+}  // namespace blcore
 
 #endif  // BLCORE_API_API_H
