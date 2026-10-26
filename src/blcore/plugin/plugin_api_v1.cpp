@@ -5,14 +5,19 @@
 #include "blcore/util/common.h"
 #include "blcore/util/logging.h"
 
-BLCORE_API_FN(bool, blcore_register_plugin_api_v1, blcore::PluginHandle* handle, const blcore::PluginApi_v1* api) {
+BLCORE_API_FN(
+    bool,
+    blcore_register_plugin_api_v1,
+    blcore::PluginHandle* handle,
+    const blcore::PluginApi_v1* api
+) {
     if (handle == nullptr || api == nullptr) {
         BLCORE_ERROR("register PluginApi_v1 called with null parameter");
         return false;
     }
 
     const std::string file = blcore::util::narrow(handle->path.filename().wstring());
-    if (handle->plugin_api_v1) {
+    if (handle->plugin_api_v1.has_value()) {
         BLCORE_WARN("PluginApi_v1 already registered for {}", file);
         return false;
     }

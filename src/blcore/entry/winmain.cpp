@@ -45,14 +45,14 @@ std::mutex plugins_mutex;
 
 // pretty much a carbon copy of the unrealsdk here
 bool is_unpacked() {
-#if defined(WILLOW64)
-    static constexpr auto SIG = hat::compile_signature<
+#ifdef WILLOW64
+    static constexpr auto ENTRY_SIG = hat::compile_signature<
         "48 8B D8 48 83 38 00 74 ?? 48 8B C8 E8 ?? ?? ?? ?? 84 C0">();
-#else
-    static constexpr auto SIG = hat::compile_signature<
+#elifdef WILLOW
+    static constexpr auto ENTRY_SIG = hat::compile_signature<
         "6A 58 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 33 DB">();
 #endif
-    return hat::find_pattern(SIG, ".text").has_result();
+    return hat::find_pattern(ENTRY_SIG, ".text").has_result();
 }
 
 BOOL WINAPI is_debugger_present_hook() {
@@ -60,13 +60,14 @@ BOOL WINAPI is_debugger_present_hook() {
         return original_is_debugger_present();
     }
 
+    // the game may call this from several threads at once, only the first one loads plugins.
     const std::scoped_lock lock{plugins_mutex};
     if (!plugins_loaded && is_unpacked()) {
         plugins_loaded = true;
         try {
             // we only start loading plugins once the game has been unpacked, we also do it here
             // while we have the game blocked so that any on_load plugin code can run immediately.
-            plugin::load_plugins(util::module_dir(blcore_module) / "blcore");
+            load_plugins(util::module_dir(blcore_module) / "blcore");
         } catch (const std::exception& ex) {
             BLCORE_ERROR("Loading plugins failed: {}", ex.what());
         }
@@ -80,7 +81,10 @@ void install_plugin_loader(HMODULE h_module) {
 
     const MH_STATUS init = MH_Initialize();
     if (init != MH_OK && init != MH_ERROR_ALREADY_INITIALIZED) {
-        BLCORE_ERROR("MinHook failed to initialise, plugins won't load: {}", MH_StatusToString(init));
+        BLCORE_ERROR(
+            "MinHook failed to initialise, plugins won't load: {}",
+            MH_StatusToString(init)
+        );
         return;
     }
 
@@ -98,7 +102,10 @@ void install_plugin_loader(HMODULE h_module) {
     }
 
     if (status != MH_OK) {
-        BLCORE_ERROR("Failed to hook IsDebuggerPresent, plugins won't load: {}", MH_StatusToString(status));
+        BLCORE_ERROR(
+            "Failed to hook IsDebuggerPresent, plugins won't load: {}",
+            MH_StatusToString(status)
+        );
     }
 }
 

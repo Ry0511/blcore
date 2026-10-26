@@ -18,13 +18,9 @@ struct PluginHandle {
     std::optional<PluginApi_v1> plugin_api_v1;  // entry point api
 };
 
-}  // namespace blcore
-
-namespace blcore::plugin {
-
 void load_plugins(const fs::path& dir);
 
-}  // namespace blcore::plugin
+}  // namespace blcore
 
 #endif  // BLCORE_EXPORTS
 

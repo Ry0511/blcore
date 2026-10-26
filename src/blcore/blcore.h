@@ -5,13 +5,15 @@
 #include <string>
 #include <filesystem>
 
+namespace blcore {
+
 #ifdef WILLOW64
 static_assert(sizeof(void*) == 8, "x64 required for bl1e");
-#else
-static_assert(sizeof(void*) == 4, "x86 required for bl1");
 #endif
 
-namespace blcore {
+#ifdef WILLOW
+static_assert(sizeof(void*) == 4, "x86 required for bl1");
+#endif
 
 namespace fs = std::filesystem;
 

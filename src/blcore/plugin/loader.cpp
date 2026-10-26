@@ -4,7 +4,7 @@
 #include "blcore/util/common.h"
 #include "blcore/util/logging.h"
 
-namespace blcore::plugin {
+namespace blcore {
 
 ////////////////////////////////////////////////////////////////////////////////
 // | PRIVATE |
@@ -13,7 +13,7 @@ namespace blcore::plugin {
 namespace {
 
 constexpr auto ENTRY_NAME = "blcore_plugin_entry";
-using EntryFn = bool(__cdecl*)(PluginHandle* handle);
+using EntryFn = bool(BLCORE_CALL*)(PluginHandle* handle) noexcept(false);
 
 std::vector<std::unique_ptr<PluginHandle>> plugins;
 
@@ -97,6 +97,10 @@ void load_plugins(const fs::path& dir) {
     std::error_code error{};
     if (!fs::is_directory(dir, error)) {
         BLCORE_INFO("No plugin folder at {}", util::narrow(dir.wstring()));
+
+        if (!fs::create_directories(dir, error) && error) {
+            BLCORE_ERROR("Failed to create plugin folder at {}: {}", util::narrow(dir.wstring()), error.message());
+        }
         return;
     }
 
@@ -123,4 +127,4 @@ void load_plugins(const fs::path& dir) {
     }
 }
 
-}  // namespace blcore::plugin
+}  // namespace blcore

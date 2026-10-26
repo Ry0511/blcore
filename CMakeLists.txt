@@ -36,10 +36,11 @@ FetchContent_MakeAvailable(libhat)
 # | BLCORE |
 ################################################################################
 
-set(BLCORE_FLAVOUR "" CACHE STRING "Which game to build for: WILLOW (BL1) or WILLOW64 (BL1E), set by the presets")
+# stolen from unrealsdk though we only care about BL1 and BL1E
+set(BLCORE_FLAVOUR "" CACHE STRING "")
 set_property(CACHE BLCORE_FLAVOUR PROPERTY STRINGS "WILLOW" "WILLOW64")
 if (NOT BLCORE_FLAVOUR MATCHES "^(WILLOW|WILLOW64)$")
-  message(FATAL_ERROR "Got invalid blcore flavour '${BLCORE_FLAVOUR}', configure with one of the presets")
+  message(FATAL_ERROR "invalid flavour '${BLCORE_FLAVOUR}'")
 endif ()
 
 set(CONFIGURE_FILES_DIR "${CMAKE_CURRENT_BINARY_DIR}/configure")
@@ -62,7 +63,14 @@ add_library(blcore SHARED ${BLCORE_SOURCE_LIST} src/blcore/version.rc)
 add_library(blcore::blcore ALIAS blcore)
 
 target_include_directories(blcore PUBLIC src ${CONFIGURE_FILES_DIR})
-target_compile_features(blcore PUBLIC cxx_std_23)
+
+set_target_properties(blcore
+    PROPERTIES
+    CXX_STANDARD 23
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+)
+
 target_compile_definitions(
     blcore
     PUBLIC
@@ -70,6 +78,7 @@ target_compile_definitions(
     PRIVATE
     BLCORE_EXPORTS
 )
+
 target_link_libraries(blcore PRIVATE minhook PUBLIC libhat::libhat)
 
 if (MSVC)
@@ -81,5 +90,3 @@ install(TARGETS blcore RUNTIME DESTINATION .)
 if (MSVC)
   install(FILES $<TARGET_PDB_FILE:blcore> DESTINATION . OPTIONAL)
 endif ()
-
-add_subdirectory(test)
