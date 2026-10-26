@@ -40,6 +40,15 @@
       }
     },
     {
+      "name": "_clion_msvc_x64",
+      "hidden": true,
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "msvc-x64"
+        }
+      }
+    },
+    {
       "name": "msvc-x86-dbg",
       "inherits": [
         "_base",
@@ -52,6 +61,22 @@
       "inherits": [
         "_base",
         "_clion_msvc_x86",
+        "_release"
+      ]
+    },
+    {
+      "name": "msvc-x64-dbg",
+      "inherits": [
+        "_base",
+        "_clion_msvc_x64",
+        "_debug"
+      ]
+    },
+    {
+      "name": "msvc-x64-rel",
+      "inherits": [
+        "_base",
+        "_clion_msvc_x64",
         "_release"
       ]
     }

@@ -1,0 +1,32 @@
+#include <winver.h>
+
+#include "blcore/version.inl"
+
+#define _STR(x) #x
+#define STR(x) _STR(x)
+
+#define VERSION_STRING STR(PROJECT_VERSION_MAJOR) "." STR(PROJECT_VERSION_MINOR) "." STR(PROJECT_VERSION_PATCH)
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     PROJECT_VERSION_MAJOR, PROJECT_VERSION_MINOR, PROJECT_VERSION_PATCH, 0
+PRODUCTVERSION  PROJECT_VERSION_MAJOR, PROJECT_VERSION_MINOR, PROJECT_VERSION_PATCH, 0
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_DLL
+
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "blcore"
+            VALUE "FileVersion", VERSION_STRING
+            VALUE "ProductName", "blcore"
+            VALUE "ProductVersion", VERSION_STRING " (" GIT_HEAD_SHA1 ")"
+            VALUE "OriginalFilename", "blcore.dll"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

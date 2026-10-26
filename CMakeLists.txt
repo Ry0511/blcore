@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 4.0)
 project(
     blcore
-    VERSION 0.0
+    VERSION 0.0.0
     LANGUAGES CXX C
 )
 
@@ -32,4 +32,44 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(libhat)
 
-## blcore is cxx23
+################################################################################
+# | BLCORE |
+################################################################################
+
+set(CONFIGURE_FILES_DIR "${CMAKE_CURRENT_BINARY_DIR}/configure")
+set(GIT_HEAD_SHA1 "@GIT_HEAD_SHA1@")
+configure_file(
+    "src/blcore/version.inl.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/version.inl.in"
+    @ONLY
+)
+unset(GIT_HEAD_SHA1)
+
+set(GIT_PRE_CONFIGURE_FILE "${CMAKE_CURRENT_BINARY_DIR}/version.inl.in")
+set(GIT_POST_CONFIGURE_FILE "${CONFIGURE_FILES_DIR}/blcore/version.inl")
+include(cmake/git_watcher.cmake)
+
+file(GLOB_RECURSE BLCORE_SOURCE_LIST CONFIGURE_DEPENDS src/blcore/*.cpp src/blcore/*.h)
+list(APPEND BLCORE_SOURCE_LIST ${GIT_POST_CONFIGURE_FILE})
+
+add_library(blcore SHARED ${BLCORE_SOURCE_LIST} src/blcore/version.rc)
+add_library(blcore::blcore ALIAS blcore)
+
+target_include_directories(blcore PUBLIC src ${CONFIGURE_FILES_DIR})
+target_compile_features(blcore PUBLIC cxx_std_23)
+target_compile_definitions(
+    blcore
+    PRIVATE
+    BLCORE_EXPORTS
+)
+target_link_libraries(blcore PRIVATE minhook libhat::libhat)
+
+if (MSVC)
+  target_compile_options(blcore PRIVATE /W4 /EHsc /utf-8)
+endif ()
+
+install(TARGETS blcore RUNTIME DESTINATION .)
+
+if (MSVC)
+  install(FILES $<TARGET_PDB_FILE:blcore> DESTINATION . OPTIONAL)
+endif ()
