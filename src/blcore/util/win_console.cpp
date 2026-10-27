@@ -11,7 +11,7 @@ namespace blcore {
 
 WinConsole::WinConsole() {
     if (GetConsoleWindow() == nullptr) {
-        allocated = AllocConsole() != FALSE;
+        m_Allocated = AllocConsole() != FALSE;
     }
 
     HANDLE console = CreateFileW(
@@ -23,26 +23,26 @@ WinConsole::WinConsole() {
         0,
         nullptr
     );
-    handle = (console == INVALID_HANDLE_VALUE) ? nullptr : console;
+    m_Handle = (console == INVALID_HANDLE_VALUE) ? nullptr : console;
 }
 
 WinConsole::~WinConsole() {
-    if (handle != nullptr) {
-        CloseHandle(handle);
+    if (m_Handle != nullptr) {
+        CloseHandle(m_Handle);
     }
 
-    if (allocated) {
+    if (m_Allocated) {
         FreeConsole();
     }
 }
 
 void WinConsole::write(std::string_view text) const {
-    if (handle == nullptr) {
+    if (m_Handle == nullptr) {
         return;
     }
     const std::wstring wide = util::widen(text);
     DWORD written = 0;
-    WriteConsoleW(handle, wide.data(), static_cast<DWORD>(wide.size()), &written, nullptr);
+    WriteConsoleW(m_Handle, wide.data(), static_cast<DWORD>(wide.size()), &written, nullptr);
 }
 
 }  // namespace blcore

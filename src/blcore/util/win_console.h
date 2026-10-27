@@ -20,8 +20,8 @@ class WinConsole {
     void write(std::string_view text) const;
 
    private:
-    void* handle = nullptr;
-    bool allocated = false;
+    void* m_Handle = nullptr;
+    bool m_Allocated = false;
 };
 
 }  // namespace blcore
