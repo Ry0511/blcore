@@ -8,6 +8,7 @@
 #include <libhat.hpp>
 
 #include "blcore/plugin/loader.h"
+#include "blcore/ue3/globals.h"
 #include "blcore/util/common.h"
 #include "blcore/util/logging.h"
 #include "blcore/version.h"
@@ -67,6 +68,7 @@ BOOL WINAPI is_debugger_present_hook() {
         try {
             // we only start loading plugins once the game has been unpacked, we also do it here
             // while we have the game blocked so that any on_load plugin code can run immediately.
+            ue3::find_globals();
             load_plugins(util::module_dir(blcore_module) / "blcore");
         } catch (const std::exception& ex) {
             BLCORE_ERROR("Loading plugins failed: {}", ex.what());
