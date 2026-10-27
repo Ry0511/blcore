@@ -14,11 +14,12 @@ namespace blcore {
 struct PluginHandle {
     fs::path path;                              // absolute path to .dll
     void* module = nullptr;                     // hmodule
-    std::string name;                           // plugin name from api
+    std::string name;                           // plugin name from api (or dll name)
     std::optional<PluginApi_v1> plugin_api_v1;  // entry point api
 };
 
 void load_plugins(const fs::path& dir);
+void shutdown_plugins();
 
 }  // namespace blcore
 

@@ -127,4 +127,12 @@ void load_plugins(const fs::path& dir) {
     }
 }
 
+void shutdown_plugins() {
+    for (const auto& handle : std::views::reverse(plugins)) {
+        if (handle->plugin_api_v1) {
+            util::invoke_guarded(handle->name, handle->plugin_api_v1->on_shutdown);
+        }
+    }
+}
+
 }  // namespace blcore

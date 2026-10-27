@@ -48,7 +48,7 @@ inline void log(Level level, std::wstring_view msg) {
 namespace blcore::logging {
 
 void initialise();
-void terminate();
+void terminate(bool wait = false);
 
 void set_console_logging(bool enabled);
 void add_log_file(const fs::path& out, bool append = false);

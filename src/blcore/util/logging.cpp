@@ -20,6 +20,7 @@ std::mutex queue_mutex;
 std::condition_variable queue_cv;
 std::vector<Message> message_queue;
 std::atomic_bool stopping{false};
+std::atomic_bool stopped{false};
 
 std::mutex sinks_mutex;
 std::vector<std::ofstream> files;
@@ -142,9 +143,14 @@ void logger_thread() {
         }
     }
 
-    const std::scoped_lock lock{sinks_mutex};
-    files.clear();
-    console.reset();
+    {
+        const std::scoped_lock lock{sinks_mutex};
+        files.clear();
+        console.reset();
+    }
+
+    stopped = true;
+    stopped.notify_all();
 }
 
 void enqueue(Level level, std::string&& msg) {
@@ -171,16 +177,21 @@ void initialise() {
     }
 
     stopping = false;
+    stopped = false;
     std::thread{&logger_thread}.detach();
 }
 
-void terminate() {
+void terminate(bool wait) {
     if (!initialised.exchange(false)) {
         return;
     }
 
     stopping = true;
     queue_cv.notify_one();
+
+    if (wait) {
+        stopped.wait(false);
+    }
 }
 
 void set_console_logging(bool enabled) {

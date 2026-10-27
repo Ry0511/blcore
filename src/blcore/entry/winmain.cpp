@@ -41,7 +41,7 @@ using IsDebuggerPresentFn = BOOL(WINAPI*)();
 HMODULE blcore_module = nullptr;
 IsDebuggerPresentFn original_is_debugger_present = nullptr;
 std::atomic_bool plugins_loaded{false};
-std::mutex plugins_mutex;
+std::mutex api_mutex;
 
 // pretty much a carbon copy of the unrealsdk here
 bool is_unpacked() {
@@ -61,7 +61,7 @@ BOOL WINAPI is_debugger_present_hook() {
     }
 
     // the game may call this from several threads at once, only the first one loads plugins.
-    const std::scoped_lock lock{plugins_mutex};
+    const std::scoped_lock lock{api_mutex};
     if (!plugins_loaded && is_unpacked()) {
         plugins_loaded = true;
         try {
@@ -76,7 +76,43 @@ BOOL WINAPI is_debugger_present_hook() {
     return original_is_debugger_present();
 }
 
-void install_plugin_loader(HMODULE h_module) {
+////////////////////////////////////////////////////////////////////////////////
+// | SHUTDOWN |
+////////////////////////////////////////////////////////////////////////////////
+
+using ExitProcessFn = void(WINAPI*)(UINT exit_code);
+
+ExitProcessFn original_exit_process = nullptr;
+std::atomic_bool shutting_down{false};
+
+void WINAPI exit_process_hook(UINT exit_code) {
+    if (!shutting_down.exchange(true)) {
+        BLCORE_INFO("Shutting down");
+        {
+            const std::scoped_lock lock{api_mutex};
+            shutdown_plugins();
+        }
+        // we do this in detach as well, its better to do it here but both places don't hurt
+        logging::terminate(true);
+    }
+
+    original_exit_process(exit_code);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// | HOOKS |
+////////////////////////////////////////////////////////////////////////////////
+
+MH_STATUS hook_kernel32(const char* name, void* detour, void** original) {
+    void* target = nullptr;
+    MH_STATUS status = MH_CreateHookApiEx(L"kernel32", name, detour, original, &target);
+    if (status == MH_OK) {
+        status = MH_EnableHook(target);
+    }
+    return status;
+}
+
+void install_hooks(HMODULE h_module) {
     blcore_module = h_module;
 
     const MH_STATUS init = MH_Initialize();
@@ -88,22 +124,30 @@ void install_plugin_loader(HMODULE h_module) {
         return;
     }
 
-    void* target = nullptr;
-    MH_STATUS status = MH_CreateHookApiEx(
-        L"kernel32",
+    // called before the game initialises but after the executable has been decrypted
+    MH_STATUS status = hook_kernel32(
         "IsDebuggerPresent",
         reinterpret_cast<void*>(&is_debugger_present_hook),
-        reinterpret_cast<void**>(&original_is_debugger_present),
-        &target
+        reinterpret_cast<void**>(&original_is_debugger_present)
     );
-
-    if (status == MH_OK) {
-        status = MH_EnableHook(target);
-    }
-
     if (status != MH_OK) {
         BLCORE_ERROR(
             "Failed to hook IsDebuggerPresent, plugins won't load: {}",
+            MH_StatusToString(status)
+        );
+    }
+
+    // little better than using detach which is much later and doesn't guarantee shutdown order.
+    // this happens while all modules are still loaded so we can notify them to shutdown before we
+    // shutdown.
+    status = hook_kernel32(
+        "ExitProcess",
+        reinterpret_cast<void*>(&exit_process_hook),
+        reinterpret_cast<void**>(&original_exit_process)
+    );
+    if (status != MH_OK) {
+        BLCORE_ERROR(
+            "Failed to hook ExitProcess, plugins won't be shut down: {}",
             MH_StatusToString(status)
         );
     }
@@ -122,7 +166,7 @@ BOOL APIENTRY DllMain(HMODULE h_module, DWORD reason, LPVOID /*reserved*/) {
     switch (reason) {
         case DLL_PROCESS_ATTACH: {
             DisableThreadLibraryCalls(h_module);
-            blcore::install_plugin_loader(h_module);
+            blcore::install_hooks(h_module);
             CreateThread(nullptr, 0, &blcore::startup_thread, h_module, 0, nullptr);
             break;
         }
