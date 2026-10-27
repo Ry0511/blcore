@@ -90,3 +90,12 @@ install(TARGETS blcore RUNTIME DESTINATION .)
 if (MSVC)
   install(FILES $<TARGET_PDB_FILE:blcore> DESTINATION . OPTIONAL)
 endif ()
+
+################################################################################
+# | SAMPLES |
+################################################################################
+
+option(BLCORE_SAMPLES "Build the sample plugins" ${PROJECT_IS_TOP_LEVEL})
+if (BLCORE_SAMPLES)
+  add_subdirectory(sample)
+endif ()
