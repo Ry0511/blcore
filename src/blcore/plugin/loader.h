@@ -16,6 +16,7 @@ struct PluginHandle {
     void* module = nullptr;                     // hmodule
     std::string name;                           // plugin name from api (or dll name)
     std::optional<PluginApi_v1> plugin_api_v1;  // entry point api
+    bool unload_requested = false;              // plugin will be unloaded soon
 };
 
 void load_plugins(const fs::path& dir);

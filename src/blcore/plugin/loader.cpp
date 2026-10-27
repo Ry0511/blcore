@@ -119,12 +119,29 @@ void load_plugins(const fs::path& dir) {
         }
     }
 
-    // invoke each plugins on_load
+    // invoke on_load on all plugins
     for (const auto& handle : plugins) {
         if (handle->plugin_api_v1) {
-            util::invoke_guarded(handle->name, handle->plugin_api_v1->on_load);
+            BLCORE_INFO("loading plugin {}", handle->name);
+            ApiResult result{API_FAIL};
+            const bool success = util::invoke_guarded(handle->name, [&result, &handle] {
+                result = handle->plugin_api_v1->on_load();
+            });
+            // not all plugins will want to stay loaded such as editor only, make only, game only
+            //  plugins only run in certain contexts.
+            handle->unload_requested = !success || result != API_OK;
         }
     }
+
+    // unload any plugins that requested to be unloaded or raised an exception in on_load
+    for (const auto& handle : plugins) {
+        if (handle->unload_requested && handle->plugin_api_v1) {
+            BLCORE_INFO("unloading plugin {}", handle->name);
+            util::invoke_guarded(handle->name, handle->plugin_api_v1->on_shutdown);
+            util::free_library(handle->module);
+        }
+    }
+    std::erase_if(plugins, [](const auto& handle) { return handle->unload_requested; });
 }
 
 void shutdown_plugins() {
@@ -134,5 +151,4 @@ void shutdown_plugins() {
         }
     }
 }
-
 }  // namespace blcore
