@@ -59,7 +59,7 @@ std::unique_ptr<PluginHandle> load_plugin(const fs::path& path) {
     };
 
     ApiResult result{API_FAIL};
-    bool success = util::invoke_guarded(
+    bool success = invoke_guarded(
         file,
         [&result, &entry, &handle] {
             result = entry(handle.get());
@@ -74,7 +74,7 @@ std::unique_ptr<PluginHandle> load_plugin(const fs::path& path) {
     // grab the plugin name and version from the api
     const PluginApi_v1& api = *handle->plugin_api_v1;
     std::string version{};
-    success = util::invoke_guarded(file, [&handle, &api, &path, &version] {
+    success = invoke_guarded(file, [&handle, &api, &path, &version] {
         handle->name = plugin_name(api, path);
         version = plugin_version(api);
     });
@@ -124,7 +124,7 @@ void load_plugins(const fs::path& dir) {
         if (handle->plugin_api_v1) {
             BLCORE_INFO("loading plugin {}", handle->name);
             ApiResult result{API_FAIL};
-            const bool success = util::invoke_guarded(handle->name, [&result, &handle] {
+            const bool success = invoke_guarded(handle->name, [&result, &handle] {
                 result = handle->plugin_api_v1->on_load();
             });
             // not all plugins will want to stay loaded such as editor only, make only, game only
@@ -137,7 +137,7 @@ void load_plugins(const fs::path& dir) {
     for (const auto& handle : plugins) {
         if (handle->unload_requested && handle->plugin_api_v1) {
             BLCORE_INFO("unloading plugin {}", handle->name);
-            util::invoke_guarded(handle->name, handle->plugin_api_v1->on_shutdown);
+            invoke_guarded(handle->name, handle->plugin_api_v1->on_shutdown);
             util::free_library(handle->module);
         }
     }
@@ -147,7 +147,7 @@ void load_plugins(const fs::path& dir) {
 void shutdown_plugins() {
     for (const auto& handle : std::views::reverse(plugins)) {
         if (handle->plugin_api_v1) {
-            util::invoke_guarded(handle->name, handle->plugin_api_v1->on_shutdown);
+            invoke_guarded(handle->name, handle->plugin_api_v1->on_shutdown);
         }
     }
 }

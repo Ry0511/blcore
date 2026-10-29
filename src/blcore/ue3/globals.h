@@ -8,6 +8,7 @@
 namespace blcore::ue3 {
 
 void find_globals();
+
 const game::Globals& found_globals();
 
 }  // namespace blcore::ue3

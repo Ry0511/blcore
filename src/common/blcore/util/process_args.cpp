@@ -1,4 +1,8 @@
-#include "blcore/pch.h"
+#include <algorithm>
+#include <cstddef>
+#include <span>
+#include <string>
+#include <string_view>
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX

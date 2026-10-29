@@ -1,5 +1,5 @@
 [sources]
-include = ["src/blcore/**/*.cpp", "src/blcore/**/*.h", "sample/*.cpp"]
+include = ["src/**/*.cpp", "src/**/*.h", "sample/*.cpp"]
 exclude = []
 
 [[package]]

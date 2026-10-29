@@ -43,6 +43,34 @@ if (NOT BLCORE_FLAVOUR MATCHES "^(WILLOW|WILLOW64)$")
   message(FATAL_ERROR "invalid flavour '${BLCORE_FLAVOUR}'")
 endif ()
 
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# shared compiler settings
+add_library(blcore_settings INTERFACE)
+target_compile_features(blcore_settings INTERFACE cxx_std_23)
+if (MSVC)
+  target_compile_options(blcore_settings INTERFACE /W4 /EHsc /utf-8)
+endif ()
+
+################################################################################
+# | BLCORE_COMMON |
+################################################################################
+
+# generic code compiled once and linked into both blcore.dll and every plugin: it never calls the
+# C API, never logs and holds no process wide state
+file(GLOB_RECURSE BLCORE_COMMON_SOURCE_LIST CONFIGURE_DEPENDS src/common/*.cpp src/common/*.h)
+
+add_library(blcore_common STATIC ${BLCORE_COMMON_SOURCE_LIST})
+
+target_include_directories(blcore_common PUBLIC src/common)
+target_compile_definitions(blcore_common PUBLIC ${BLCORE_FLAVOUR})
+target_link_libraries(blcore_common PRIVATE blcore_settings shell32)
+
+################################################################################
+# | BLCORE_DLL |
+################################################################################
+
 set(CONFIGURE_FILES_DIR "${CMAKE_CURRENT_BINARY_DIR}/configure")
 set(GIT_HEAD_SHA1 "@GIT_HEAD_SHA1@")
 configure_file(
@@ -56,39 +84,25 @@ set(GIT_PRE_CONFIGURE_FILE "${CMAKE_CURRENT_BINARY_DIR}/version.inl.in")
 set(GIT_POST_CONFIGURE_FILE "${CONFIGURE_FILES_DIR}/blcore/version.inl")
 include(cmake/git_watcher.cmake)
 
-file(GLOB_RECURSE BLCORE_SOURCE_LIST CONFIGURE_DEPENDS src/blcore/*.cpp src/blcore/*.h)
-list(APPEND BLCORE_SOURCE_LIST ${GIT_POST_CONFIGURE_FILE})
+file(GLOB_RECURSE BLCORE_DLL_SOURCE_LIST CONFIGURE_DEPENDS src/blcore/*.cpp src/blcore/*.h)
+list(APPEND BLCORE_DLL_SOURCE_LIST ${GIT_POST_CONFIGURE_FILE})
 
-add_library(blcore SHARED ${BLCORE_SOURCE_LIST} src/blcore/version.rc)
-add_library(blcore::blcore ALIAS blcore)
+add_library(blcore_dll SHARED ${BLCORE_DLL_SOURCE_LIST} src/blcore/version.rc)
 
-target_include_directories(blcore PUBLIC src ${CONFIGURE_FILES_DIR})
-
-set_target_properties(blcore
+set_target_properties(blcore_dll
     PROPERTIES
-    CXX_STANDARD 23
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF
+    OUTPUT_NAME blcore
+    ARCHIVE_OUTPUT_NAME blcore_dll
 )
 
-target_compile_definitions(
-    blcore
-    PUBLIC
-    ${BLCORE_FLAVOUR}
-    PRIVATE
-    BLCORE_EXPORTS
-)
+target_include_directories(blcore_dll PUBLIC src ${CONFIGURE_FILES_DIR})
+target_compile_definitions(blcore_dll PRIVATE BLCORE_EXPORTS)
+target_link_libraries(blcore_dll PUBLIC blcore_common libhat::libhat PRIVATE minhook blcore_settings)
 
-target_link_libraries(blcore PRIVATE minhook PUBLIC libhat::libhat)
+install(TARGETS blcore_dll RUNTIME DESTINATION .)
 
 if (MSVC)
-  target_compile_options(blcore PRIVATE /W4 /EHsc /utf-8)
-endif ()
-
-install(TARGETS blcore RUNTIME DESTINATION .)
-
-if (MSVC)
-  install(FILES $<TARGET_PDB_FILE:blcore> DESTINATION . OPTIONAL)
+  install(FILES $<TARGET_PDB_FILE:blcore_dll> DESTINATION . OPTIONAL)
 endif ()
 
 ################################################################################

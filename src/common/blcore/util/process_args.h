@@ -1,14 +1,12 @@
 #ifndef BLCORE_PROCESS_ARGS_H
 #define BLCORE_PROCESS_ARGS_H
 
-#include "blcore/api/api.h"
-
 #include <cstddef>
 #include <string_view>
 
 namespace blcore::util {
 
-class BLCORE_API ProcessArgs {
+class ProcessArgs {
    public:
     explicit ProcessArgs();
     ~ProcessArgs() noexcept(true);
