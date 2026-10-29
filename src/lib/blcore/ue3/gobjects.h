@@ -1,7 +1,6 @@
 #ifndef BLCORE_UE3_GOBJECTS_H
 #define BLCORE_UE3_GOBJECTS_H
 
-#include "blcore/api/gobjects.h"
 #include "blcore/ue3/tarray.h"
 
 #include <cstddef>
@@ -11,7 +10,7 @@ namespace blcore::ue3 {
 
 class GObjects {
    public:
-    GObjects() = default;
+    GObjects();
 
     [[nodiscard]] std::size_t size() const {
         return objects().size();
@@ -31,11 +30,9 @@ class GObjects {
     }
 
    private:
-    TArray<void*>* m_Objects{blcore_get_gobjects()};
+    TArray<void*>* m_Objects{nullptr};
 
-    [[nodiscard]] std::span<void*> objects() const {
-        return (m_Objects != nullptr) ? m_Objects->span() : std::span<void*>{};
-    }
+    [[nodiscard]] std::span<void*> objects() const;
 };
 
 }  // namespace blcore::ue3

@@ -6,10 +6,6 @@
 #include <string_view>
 #include <type_traits>
 
-////////////////////////////////////////////////////////////////////////////////
-// | PUBLIC |
-////////////////////////////////////////////////////////////////////////////////
-
 namespace blcore::hook {
 
 template <typename Fn>
@@ -45,17 +41,9 @@ bool create_export(
     return result == API_OK;
 }
 
-inline bool remove(void* target) {
-    return blcore_hook_remove(target) == API_OK;
-}
-
-inline bool enable(void* target) {
-    return blcore_hook_enable(target) == API_OK;
-}
-
-inline bool disable(void* target) {
-    return blcore_hook_disable(target) == API_OK;
-}
+bool remove(void* target);
+bool enable(void* target);
+bool disable(void* target);
 
 template <FunctionPointer Fn>
 bool install(void* target, Fn detour, Fn* original = nullptr) {

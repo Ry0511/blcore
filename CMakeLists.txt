@@ -33,7 +33,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(libhat)
 
 ################################################################################
-# | BLCORE |
+# | CONFIGURATION |
 ################################################################################
 
 # stolen from unrealsdk though we only care about BL1 and BL1E
@@ -57,8 +57,6 @@ endif ()
 # | BLCORE_COMMON |
 ################################################################################
 
-# generic code compiled once and linked into both blcore.dll and every plugin: it never calls the
-# C API, never logs and holds no process wide state
 file(GLOB_RECURSE BLCORE_COMMON_SOURCE_LIST CONFIGURE_DEPENDS src/common/*.cpp src/common/*.h)
 
 add_library(blcore_common STATIC ${BLCORE_COMMON_SOURCE_LIST})
@@ -95,8 +93,6 @@ set_target_properties(blcore_dll
     ARCHIVE_OUTPUT_NAME blcore_dll
 )
 
-# src/dll/include is the DLL boundary: the C API, the plugin entry and the inline helpers over them;
-# everything under src/dll/blcore is private to the DLL
 target_include_directories(blcore_dll PUBLIC src/dll/include PRIVATE src/dll ${CONFIGURE_FILES_DIR})
 target_compile_definitions(blcore_dll PRIVATE BLCORE_EXPORTS)
 target_link_libraries(blcore_dll PUBLIC blcore_common libhat::libhat PRIVATE minhook blcore_settings)
@@ -106,6 +102,18 @@ install(TARGETS blcore_dll RUNTIME DESTINATION .)
 if (MSVC)
   install(FILES $<TARGET_PDB_FILE:blcore_dll> DESTINATION . OPTIONAL)
 endif ()
+
+################################################################################
+# | BLCORE |
+################################################################################
+
+file(GLOB_RECURSE BLCORE_SOURCE_LIST CONFIGURE_DEPENDS src/lib/*.cpp src/lib/*.h)
+
+add_library(blcore STATIC ${BLCORE_SOURCE_LIST})
+add_library(blcore::blcore ALIAS blcore)
+
+target_include_directories(blcore PUBLIC src/lib)
+target_link_libraries(blcore PUBLIC blcore_dll PRIVATE blcore_settings)
 
 ################################################################################
 # | SAMPLES |
