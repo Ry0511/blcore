@@ -2,6 +2,7 @@
 
 #include "blcore/util/common.h"
 #include "blcore/util/logging.h"
+#include "blcore/util/logging_backend.h"
 #include "blcore/util/win_console.h"
 
 namespace blcore::logging {

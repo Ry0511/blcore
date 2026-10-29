@@ -74,7 +74,7 @@ target_link_libraries(blcore_common PRIVATE blcore_settings shell32)
 set(CONFIGURE_FILES_DIR "${CMAKE_CURRENT_BINARY_DIR}/configure")
 set(GIT_HEAD_SHA1 "@GIT_HEAD_SHA1@")
 configure_file(
-    "src/blcore/version.inl.in"
+    "src/dll/blcore/version.inl.in"
     "${CMAKE_CURRENT_BINARY_DIR}/version.inl.in"
     @ONLY
 )
@@ -84,10 +84,10 @@ set(GIT_PRE_CONFIGURE_FILE "${CMAKE_CURRENT_BINARY_DIR}/version.inl.in")
 set(GIT_POST_CONFIGURE_FILE "${CONFIGURE_FILES_DIR}/blcore/version.inl")
 include(cmake/git_watcher.cmake)
 
-file(GLOB_RECURSE BLCORE_DLL_SOURCE_LIST CONFIGURE_DEPENDS src/blcore/*.cpp src/blcore/*.h)
+file(GLOB_RECURSE BLCORE_DLL_SOURCE_LIST CONFIGURE_DEPENDS src/dll/*.cpp src/dll/*.h)
 list(APPEND BLCORE_DLL_SOURCE_LIST ${GIT_POST_CONFIGURE_FILE})
 
-add_library(blcore_dll SHARED ${BLCORE_DLL_SOURCE_LIST} src/blcore/version.rc)
+add_library(blcore_dll SHARED ${BLCORE_DLL_SOURCE_LIST} src/dll/blcore/version.rc)
 
 set_target_properties(blcore_dll
     PROPERTIES
@@ -95,7 +95,9 @@ set_target_properties(blcore_dll
     ARCHIVE_OUTPUT_NAME blcore_dll
 )
 
-target_include_directories(blcore_dll PUBLIC src ${CONFIGURE_FILES_DIR})
+# src/dll/include is the DLL boundary: the C API, the plugin entry and the inline helpers over them;
+# everything under src/dll/blcore is private to the DLL
+target_include_directories(blcore_dll PUBLIC src/dll/include PRIVATE src/dll ${CONFIGURE_FILES_DIR})
 target_compile_definitions(blcore_dll PRIVATE BLCORE_EXPORTS)
 target_link_libraries(blcore_dll PUBLIC blcore_common libhat::libhat PRIVATE minhook blcore_settings)
 

@@ -1,8 +1,6 @@
 #ifndef BLCORE_GAME_GAME_H
 #define BLCORE_GAME_GAME_H
 
-#ifdef BLCORE_EXPORTS
-
 #include "blcore/ue3/tarray.h"
 
 #include <cstddef>
@@ -23,7 +21,5 @@ void* realloc(void* gmalloc, void* original, std::size_t size);
 void free(void* gmalloc, void* data);
 
 }  // namespace blcore::game
-
-#endif  // BLCORE_EXPORTS
 
 #endif  // BLCORE_GAME_GAME_H

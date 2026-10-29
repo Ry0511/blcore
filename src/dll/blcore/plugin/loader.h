@@ -1,8 +1,6 @@
 #ifndef BLCORE_PLUGIN_LOADER_H
 #define BLCORE_PLUGIN_LOADER_H
 
-#ifdef BLCORE_EXPORTS
-
 #include "blcore/blcore.h"
 #include "blcore/plugin/plugin_api_v1.h"
 #include "blcore/util/logging.h"
@@ -40,7 +38,5 @@ bool invoke_guarded(std::string_view what, Fn&& fn) {
 }
 
 }  // namespace blcore
-
-#endif  // BLCORE_EXPORTS
 
 #endif  // BLCORE_PLUGIN_LOADER_H

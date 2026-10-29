@@ -7,7 +7,7 @@
 #include <MinHook.h>
 
 #include "blcore/util/common.h"
-#include "blcore/util/hook.h"
+#include "blcore/api/hook.h"
 #include "blcore/util/logging.h"
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -2,7 +2,7 @@
 
 #include "blcore/game/game.h"
 #include "blcore/ue3/globals.h"
-#include "blcore/ue3/memory.h"
+#include "blcore/api/memory.h"
 #include "blcore/util/logging.h"
 
 namespace blcore::ue3::memory {

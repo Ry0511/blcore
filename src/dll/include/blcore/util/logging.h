@@ -6,10 +6,6 @@
 #include <format>
 #include <string_view>
 
-////////////////////////////////////////////////////////////////////////////////
-// | PUBLIC |
-////////////////////////////////////////////////////////////////////////////////
-
 namespace blcore::logging {
 
 inline void log(Level level, std::string_view msg) {
@@ -36,25 +32,5 @@ inline void log(Level level, std::wstring_view msg) {
 #define BLCORE_ERROR(...) BLCORE_LOG(Error, __VA_ARGS__)
 
 // NOLINTEND(cppcoreguidelines-macro-usage)
-
-////////////////////////////////////////////////////////////////////////////////
-// | PRIVATE |
-////////////////////////////////////////////////////////////////////////////////
-
-#ifdef BLCORE_EXPORTS
-
-#include "blcore/blcore.h"
-
-namespace blcore::logging {
-
-void initialise();
-void terminate(bool wait = false);
-
-void set_console_logging(bool enabled);
-void add_log_file(const fs::path& out, bool append = false);
-
-}  // namespace blcore::logging
-
-#endif  // BLCORE_EXPORTS
 
 #endif  // BLCORE_UTIL_LOGGING_H

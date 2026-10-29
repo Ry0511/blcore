@@ -11,6 +11,7 @@
 #include "blcore/ue3/globals.h"
 #include "blcore/util/common.h"
 #include "blcore/util/logging.h"
+#include "blcore/util/logging_backend.h"
 #include "blcore/version.h"
 
 namespace blcore {
