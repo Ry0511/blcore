@@ -1,11 +1,11 @@
-#ifndef BLCORE_UE3_MEMORY_H
-#define BLCORE_UE3_MEMORY_H
+#ifndef BLCORE_ENGINE_MEMORY_H
+#define BLCORE_ENGINE_MEMORY_H
 
 #include "blcore/api/memory.h"
 
 #include <cstddef>
 
-namespace blcore::ue3::memory {
+namespace blcore::engine {
 
 inline void* malloc(std::size_t size) {
     return blcore_malloc(size);
@@ -19,6 +19,6 @@ inline void free(void* data) {
     blcore_free(data);
 }
 
-}  // namespace blcore::ue3::memory
+}  // namespace blcore::engine
 
-#endif  // BLCORE_UE3_MEMORY_H
+#endif  // BLCORE_ENGINE_MEMORY_H

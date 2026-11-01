@@ -1,11 +1,8 @@
 #include "blcore/pch.h"
 
 #include "blcore/game/game.h"
-#include "blcore/ue3/globals.h"
 #include "blcore/api/memory.h"
 #include "blcore/util/logging.h"
-
-namespace blcore::ue3::memory {
 
 ////////////////////////////////////////////////////////////////////////////////
 // | PRIVATE |
@@ -13,21 +10,19 @@ namespace blcore::ue3::memory {
 
 namespace {
 
-void* gmalloc() {
-    void** address = found_globals().gmalloc;
+void* get_gmalloc() {
+    void** address = blcore::game::globals().gmalloc;
     return (address != nullptr) ? *address : nullptr;
 }
 
 }  // namespace
-
-}  // namespace blcore::ue3::memory
 
 ////////////////////////////////////////////////////////////////////////////////
 // | EXPORTS |
 ////////////////////////////////////////////////////////////////////////////////
 
 BLCORE_API_FN(void*, blcore_malloc, std::size_t size) {
-    void* gmalloc = blcore::ue3::memory::gmalloc();
+    void* gmalloc = get_gmalloc();
     if (gmalloc == nullptr) {
         BLCORE_ERROR("GMalloc is null, can't malloc {}", size);
         return nullptr;
@@ -36,7 +31,7 @@ BLCORE_API_FN(void*, blcore_malloc, std::size_t size) {
 }
 
 BLCORE_API_FN(void*, blcore_realloc, void* original, std::size_t size) {
-    void* gmalloc = blcore::ue3::memory::gmalloc();
+    void* gmalloc = get_gmalloc();
     if (gmalloc == nullptr) {
         BLCORE_ERROR("GMalloc is null, can't realloc {}", size);
         return nullptr;
@@ -49,7 +44,7 @@ BLCORE_API_FN(void, blcore_free, void* data) {
         return;
     }
 
-    void* gmalloc = blcore::ue3::memory::gmalloc();
+    void* gmalloc = get_gmalloc();
     if (gmalloc == nullptr) {
         BLCORE_ERROR("GMalloc is null, can't free {} ( how did you get here? )", data);
         return;

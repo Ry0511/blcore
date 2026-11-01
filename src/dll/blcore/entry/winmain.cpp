@@ -7,8 +7,8 @@
 #include <MinHook.h>
 #include <libhat.hpp>
 
+#include "blcore/game/game.h"
 #include "blcore/plugin/loader.h"
-#include "blcore/ue3/globals.h"
 #include "blcore/util/common.h"
 #include "blcore/util/logging.h"
 #include "blcore/util/logging_backend.h"
@@ -62,14 +62,13 @@ BOOL WINAPI is_debugger_present_hook() {
         return original_is_debugger_present();
     }
 
-    // the game may call this from several threads at once, only the first one loads plugins.
     const std::scoped_lock lock{api_mutex};
     if (!plugins_loaded && is_unpacked()) {
         plugins_loaded = true;
         try {
             // we only start loading plugins once the game has been unpacked, we also do it here
             // while we have the game blocked so that any on_load plugin code can run immediately.
-            ue3::find_globals();
+            game::init_globals();
             load_plugins(util::module_dir(blcore_module) / "blcore");
         } catch (const std::exception& ex) {
             BLCORE_ERROR("Loading plugins failed: {}", ex.what());

@@ -8,13 +8,16 @@
 namespace blcore::game {
 
 struct Globals {
-    ue3::TArray<void*>* gobjects{nullptr};  // TArray<UObject*> UObject::GObjObjects
-    void** gnames{nullptr};                 // TArray<FNameEntry*> FName::Names
-    void** gmalloc{nullptr};                // FMalloc* GMalloc
-    void** gnatives{nullptr};               // Native GNatives[EX_Max]
+    ue3::TArray<void*>* gobjects{nullptr};
+    void** gnames{nullptr};
+    void** gmalloc{nullptr};
+    void** gnatives{nullptr};
 };
 
 void find_globals(Globals& out);
+
+void init_globals();
+const Globals& globals();
 
 void* malloc(void* gmalloc, std::size_t size);
 void* realloc(void* gmalloc, void* original, std::size_t size);

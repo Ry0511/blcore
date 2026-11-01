@@ -1,12 +1,12 @@
-#ifndef BLCORE_UE3_GOBJECTS_H
-#define BLCORE_UE3_GOBJECTS_H
+#ifndef BLCORE_ENGINE_GOBJECTS_H
+#define BLCORE_ENGINE_GOBJECTS_H
 
 #include "blcore/ue3/tarray.h"
 
 #include <cstddef>
 #include <span>
 
-namespace blcore::ue3 {
+namespace blcore::engine {
 
 class GObjects {
    public:
@@ -30,11 +30,11 @@ class GObjects {
     }
 
    private:
-    TArray<void*>* m_Objects{nullptr};
+    ue3::TArray<void*>* m_Objects{nullptr};
 
     [[nodiscard]] std::span<void*> objects() const;
 };
 
-}  // namespace blcore::ue3
+}  // namespace blcore::engine
 
-#endif  // BLCORE_UE3_GOBJECTS_H
+#endif  // BLCORE_ENGINE_GOBJECTS_H
