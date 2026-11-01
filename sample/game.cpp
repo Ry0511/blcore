@@ -1,3 +1,4 @@
+#include "blcore/plugin/plugin.h"
 #include "blcore/plugin/plugin_api_v1.h"
 #include "blcore/util/logging.h"
 #include "blcore/util/process_args.h"
@@ -43,5 +44,5 @@ BLCORE_PLUGIN_ENTRY(handle) {
         .on_load = &on_load,
         .on_shutdown = &on_shutdown,
     };
-    return blcore_register_plugin_api_v1(handle, &api);
+    return blcore::register_api(handle, api);
 }
