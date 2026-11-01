@@ -4,14 +4,13 @@
 
 #include "blcore/game/game.h"
 
-// not mapped for BL1E yet, never reached while GMalloc isn't found
 namespace blcore::game {
 
-void* malloc(void* /*gmalloc*/, size_t /*size*/) {
+void* malloc(void* /*gmalloc*/, size_t /*size*/, uint32_t /*alignment*/) {
     return nullptr;
 }
 
-void* realloc(void* /*gmalloc*/, void* /*original*/, size_t /*size*/) {
+void* realloc(void* /*gmalloc*/, void* /*original*/, size_t /*size*/, uint32_t /*alignment*/) {
     return nullptr;
 }
 

@@ -4,6 +4,7 @@
 #include "blcore/ue3/tarray.h"
 
 #include <cstddef>
+#include <cstdint>
 
 namespace blcore::game {
 
@@ -19,8 +20,8 @@ void find_globals(Globals& out);
 void init_globals();
 const Globals& globals();
 
-void* malloc(void* gmalloc, std::size_t size);
-void* realloc(void* gmalloc, void* original, std::size_t size);
+void* malloc(void* gmalloc, std::size_t size, std::uint32_t alignment);
+void* realloc(void* gmalloc, void* original, std::size_t size, std::uint32_t alignment);
 void free(void* gmalloc, void* data);
 
 }  // namespace blcore::game
