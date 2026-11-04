@@ -1,6 +1,7 @@
 #ifndef BLCORE_GAME_GAME_H
 #define BLCORE_GAME_GAME_H
 
+#include "blcore/ue3/fwd.h"
 #include "blcore/ue3/tarray.h"
 
 #include <cstddef>
@@ -9,7 +10,7 @@
 namespace blcore::game {
 
 struct Globals {
-    ue3::TArray<void*>* gobjects{nullptr};
+    ue3::TArray<ue3::UObject*>* gobjects{nullptr};
     void** gnames{nullptr};
     void** gmalloc{nullptr};
     void** gnatives{nullptr};

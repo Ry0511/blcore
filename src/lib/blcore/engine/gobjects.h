@@ -1,6 +1,7 @@
 #ifndef BLCORE_ENGINE_GOBJECTS_H
 #define BLCORE_ENGINE_GOBJECTS_H
 
+#include "blcore/ue3/fwd.h"
 #include "blcore/ue3/tarray.h"
 
 #include <cstddef>
@@ -16,8 +17,8 @@ class GObjects {
         return objects().size();
     }
 
-    [[nodiscard]] void* at(std::size_t index) const {
-        const std::span<void*> objects = this->objects();
+    [[nodiscard]] ue3::UObject* at(std::size_t index) const {
+        const std::span<ue3::UObject*> objects = this->objects();
         return (index < objects.size()) ? objects.subspan(index, 1).front() : nullptr;
     }
 
@@ -30,9 +31,9 @@ class GObjects {
     }
 
    private:
-    ue3::TArray<void*>* m_Objects{nullptr};
+    ue3::TArray<ue3::UObject*>* m_Objects{nullptr};
 
-    [[nodiscard]] std::span<void*> objects() const;
+    [[nodiscard]] std::span<ue3::UObject*> objects() const;
 };
 
 }  // namespace blcore::engine

@@ -54,7 +54,11 @@ constexpr auto GNATIVES_SIG = hat::compile_signature<
 ////////////////////////////////////////////////////////////////////////////////
 
 void find_globals(Globals& out) {
-    out.gobjects = sigscan::find_absolute_address<ue3::TArray<void*>>("GObjects", GOBJECTS_SIG, GOBJECTS_OFFSET);
+    out.gobjects = sigscan::find_absolute_address<ue3::TArray<ue3::UObject*>>(
+        "GObjects",
+        GOBJECTS_SIG,
+        GOBJECTS_OFFSET
+    );
     out.gnames = sigscan::find_absolute_address("GNames", GNAMES_SIG, GNAMES_OFFSET);
     out.gmalloc = sigscan::find_absolute_address("GMalloc", GMALLOC_SIG, GMALLOC_OFFSET);
     out.gnatives = sigscan::find_absolute_address("GNatives", GNATIVES_SIG, GNATIVES_OFFSET);
