@@ -16,10 +16,8 @@ struct UStruct : UField {
 
     BLCORE_UE3_FIELD(SuperField)
     BLCORE_UE3_FIELD(ScriptText)
-    BLCORE_UE3_FIELD(CppText)
     BLCORE_UE3_FIELD(Children)
     BLCORE_UE3_FIELD(PropertiesSize)
-    BLCORE_UE3_FIELD(Script)
     BLCORE_UE3_FIELD(PropertyLink)
 };
 

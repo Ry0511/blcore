@@ -33,7 +33,6 @@ struct UField {
 
 struct UStruct {
     using ScriptText     = Field<void*, 0x68>;
-    using CppText        = Field<void*, 0x70>;
     using SuperField     = Field<ue3::UStruct*, 0x78>;
     using Children       = Field<ue3::UField*, 0x80>;
     using PropertiesSize = Field<uint16_t, 0x88>;
@@ -43,9 +42,6 @@ struct UStruct {
 struct UFunction {
     using FunctionFlags     = Field<uint32_t, 0xD0>;
     using iNative           = Field<uint16_t, 0xD4>;
-    using RepOffset         = Field<uint16_t, 0xD6>;
-    using FriendlyName      = Field<ue3::FName, 0xD8>;
-    using OperPrecedence    = Field<uint8_t, 0xE0>;
     using NumParms          = Field<uint8_t, 0xE1>;
     using ParmsSize         = Field<uint16_t, 0xE2>;
     using ReturnValueOffset = Field<uint16_t, 0xE4>;
@@ -74,7 +70,6 @@ struct UPackage {
 };
 
 struct FNameEntry {
-    using Flags    = Field<uint64_t, 0x00>;
     using Index    = Field<int32_t, 0x08>;
     using AnsiName = Field<char[ue3::NAME_SIZE], 0x14>;
     using UniName  = Field<wchar_t[ue3::NAME_SIZE], 0x14>;
