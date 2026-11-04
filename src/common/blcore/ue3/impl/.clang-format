@@ -1,0 +1,3 @@
+BasedOnStyle: InheritParentConfig
+AlignConsecutiveAssignments:
+  Enabled: true

@@ -1,8 +1,8 @@
-#ifndef BLCORE_UE3_CORE_H
-#define BLCORE_UE3_CORE_H
+#ifndef BLCORE_UE3_UOBJECT_H
+#define BLCORE_UE3_UOBJECT_H
 
-#include "blcore/ue3/bl1/core.h"
-#include "blcore/ue3/bl1e/core.h"
+#include "blcore/ue3/impl/bl1_core.h"
+#include "blcore/ue3/impl/bl1e_core.h"
 #include "blcore/ue3/field.h"
 #include "blcore/ue3/fname.h"
 #include "blcore/ue3/fwd.h"
@@ -28,22 +28,6 @@ struct UObject {
     BLCORE_UE3_FIELD(ObjectArchetype)
 };
 
-struct UField : UObject {
-    BLCORE_MAPPED_CLASS(UField)
-};
-
-struct UStruct : UField {
-    BLCORE_MAPPED_CLASS(UStruct)
-};
-
-struct UState : UStruct {
-    BLCORE_MAPPED_CLASS(UState)
-};
-
-struct UClass : UState {
-    BLCORE_MAPPED_CLASS(UClass)
-};
-
 }  // namespace blcore::ue3
 
-#endif  // BLCORE_UE3_CORE_H
+#endif  // BLCORE_UE3_UOBJECT_H

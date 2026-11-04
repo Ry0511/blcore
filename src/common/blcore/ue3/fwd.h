@@ -6,8 +6,11 @@ namespace blcore::ue3 {
 struct UObject;
 struct UField;
 struct UStruct;
-struct UState;
+struct UFunction;
 struct UClass;
+struct UProperty;
+struct UEnum;
+struct UPackage;
 
 }  // namespace blcore::ue3
 
