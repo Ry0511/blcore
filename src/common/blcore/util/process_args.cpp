@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <cstddef>
 #include <span>
 #include <string>
 #include <string_view>
@@ -9,6 +8,7 @@
 #include <Windows.h>
 #include <shellapi.h>
 
+#include "blcore/blcore.h"
 #include "blcore/util/common.h"
 #include "blcore/util/process_args.h"
 

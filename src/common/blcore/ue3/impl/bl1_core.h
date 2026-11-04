@@ -1,12 +1,11 @@
 #ifndef BLCORE_UE3_IMPL_BL1_CORE_H
 #define BLCORE_UE3_IMPL_BL1_CORE_H
 
+#include "blcore/blcore.h"
 #include "blcore/ue3/field.h"
 #include "blcore/ue3/fname.h"
 #include "blcore/ue3/fwd.h"
 #include "blcore/ue3/tarray.h"
-
-#include <cstdint>
 
 namespace blcore::bl1 {
 
@@ -77,6 +76,14 @@ struct UEnum {
 
 struct UPackage {
     using PackageFlags = Field<uint32_t, 0x9C>;
+};
+
+struct FNameEntry {
+    using Flags    = Field<uint64_t, 0x00>;
+    using Index    = Field<int32_t, 0x08>;
+    using HashNext = Field<ue3::FNameEntry*, 0x0C>;
+    using AnsiName = Field<char[ue3::NAME_SIZE], 0x10>;
+    using UniName  = Field<wchar_t[ue3::NAME_SIZE], 0x10>;
 };
 
 }  // namespace blcore::bl1

@@ -31,7 +31,6 @@ struct FMalloc {
 // | PUBLIC |
 ////////////////////////////////////////////////////////////////////////////////
 
-
 void* malloc(void* gmalloc, size_t size, uint32_t alignment) {
     auto* self = static_cast<FMalloc*>(gmalloc);
     return self->vtable->malloc(self, static_cast<uint32_t>(size), alignment);

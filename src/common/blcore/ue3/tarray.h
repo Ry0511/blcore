@@ -1,8 +1,8 @@
 #ifndef BLCORE_UE3_TARRAY_H
 #define BLCORE_UE3_TARRAY_H
 
-#include <cstddef>
-#include <cstdint>
+#include "blcore/blcore.h"
+
 #include <span>
 
 namespace blcore::ue3 {
@@ -16,11 +16,11 @@ struct TArray {
     int32_t ArrayMax{0};
 
     [[nodiscard]] std::span<T> span() const {
-        return {Data, static_cast<std::size_t>(ArrayNum)};
+        return {Data, static_cast<size_t>(ArrayNum)};
     }
 
-    [[nodiscard]] std::size_t size() const {
-        return static_cast<std::size_t>(ArrayNum);
+    [[nodiscard]] size_t size() const {
+        return static_cast<size_t>(ArrayNum);
     }
 
     [[nodiscard]] auto begin() const {

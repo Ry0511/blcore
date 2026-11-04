@@ -21,7 +21,7 @@ void* get_gmalloc() {
 // | EXPORTS |
 ////////////////////////////////////////////////////////////////////////////////
 
-BLCORE_API_FN(void*, blcore_malloc, std::size_t size, std::uint32_t alignment) {
+BLCORE_API_FN(void*, blcore_malloc, size_t size, uint32_t alignment) {
     void* gmalloc = get_gmalloc();
     if (gmalloc == nullptr) {
         BLCORE_ERROR("GMalloc is null, can't malloc {}", size);
@@ -30,7 +30,7 @@ BLCORE_API_FN(void*, blcore_malloc, std::size_t size, std::uint32_t alignment) {
     return blcore::game::malloc(gmalloc, size, alignment);
 }
 
-BLCORE_API_FN(void*, blcore_realloc, void* original, std::size_t size, std::uint32_t alignment) {
+BLCORE_API_FN(void*, blcore_realloc, void* original, size_t size, uint32_t alignment) {
     void* gmalloc = get_gmalloc();
     if (gmalloc == nullptr) {
         BLCORE_ERROR("GMalloc is null, can't realloc {}", size);

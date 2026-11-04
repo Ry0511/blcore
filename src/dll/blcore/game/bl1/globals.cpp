@@ -59,7 +59,11 @@ void find_globals(Globals& out) {
         GOBJECTS_SIG,
         GOBJECTS_OFFSET
     );
-    out.gnames = sigscan::find_absolute_address("GNames", GNAMES_SIG, GNAMES_OFFSET);
+    out.gnames = sigscan::find_absolute_address<ue3::TArray<ue3::FNameEntry*>>(
+        "GNames",
+        GNAMES_SIG,
+        GNAMES_OFFSET
+    );
     out.gmalloc = sigscan::find_absolute_address("GMalloc", GMALLOC_SIG, GMALLOC_OFFSET);
     out.gnatives = sigscan::find_absolute_address("GNatives", GNATIVES_SIG, GNATIVES_OFFSET);
 }

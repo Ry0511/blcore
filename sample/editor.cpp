@@ -1,16 +1,16 @@
+#include "blcore/blcore.h"
 #include "blcore/plugin/plugin.h"
 #include "blcore/plugin/plugin_api_v1.h"
 #include "blcore/util/logging.h"
 #include "blcore/util/process_args.h"
 
-#include <cstddef>
 #include <string_view>
 
 namespace {
 
 constexpr std::string_view NAME = "sample_editor";
 
-void BLCORE_CALL get_name(const char** out_name, std::size_t* out_size) {
+void BLCORE_CALL get_name(const char** out_name, size_t* out_size) {
     BLCORE_INFO("[{}] get_name", NAME);
     *out_name = NAME.data();
     *out_size = NAME.size();

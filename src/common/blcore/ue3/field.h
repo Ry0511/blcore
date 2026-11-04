@@ -1,22 +1,22 @@
 #ifndef BLCORE_UE3_FIELD_H
 #define BLCORE_UE3_FIELD_H
 
-#include <cstddef>
-#include <cstdint>
+#include "blcore/blcore.h"
+
 #include <type_traits>
 
 namespace blcore::ue3 {
 
-template <typename T, std::size_t Offset>
+template <typename T, size_t Offset>
 struct Field {
     using type = T;
-    static constexpr std::size_t offset = Offset;
+    static constexpr size_t offset = Offset;
 };
 
 template <typename T, typename Self>
-[[nodiscard]] auto& field(Self* self, std::size_t offset) {
+[[nodiscard]] auto& field(Self* self, size_t offset) {
     using Ptr = std::conditional_t<std::is_const_v<Self>, const T*, T*>;
-    return *reinterpret_cast<Ptr>(reinterpret_cast<std::uintptr_t>(self) + offset);
+    return *reinterpret_cast<Ptr>(reinterpret_cast<uintptr_t>(self) + offset);
 }
 
 }  // namespace blcore::ue3

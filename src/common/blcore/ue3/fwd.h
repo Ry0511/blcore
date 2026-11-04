@@ -1,6 +1,8 @@
 #ifndef BLCORE_UE3_FWD_H
 #define BLCORE_UE3_FWD_H
 
+// NOLINTBEGIN(bugprone-forward-declaration-namespace)
+
 namespace blcore::ue3 {
 
 struct UObject;
@@ -11,7 +13,10 @@ struct UClass;
 struct UProperty;
 struct UEnum;
 struct UPackage;
+struct FNameEntry;
 
 }  // namespace blcore::ue3
+
+// NOLINTEND(bugprone-forward-declaration-namespace)
 
 #endif  // BLCORE_UE3_FWD_H

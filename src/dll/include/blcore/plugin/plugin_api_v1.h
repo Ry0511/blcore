@@ -2,8 +2,7 @@
 #define BLCORE_PLUGIN_API_V1_H
 
 #include "blcore/api/api.h"
-
-#include <cstddef>
+#include "blcore/blcore.h"
 
 namespace blcore {
 
@@ -17,7 +16,7 @@ struct PluginVersion_v1 {
 
 using PluginApi_OnLoad = ApiResult(BLCORE_CALL*)() noexcept(false);
 using PluginApi_OnShutdown = void(BLCORE_CALL*)() noexcept(false);
-using PluginApi_GetName = void(BLCORE_CALL*)(const char** out_name, std::size_t* out_size) noexcept(false);
+using PluginApi_GetName = void(BLCORE_CALL*)(const char** out_name, size_t* out_size) noexcept(false);
 using PluginApi_GetVersion = void(BLCORE_CALL*)(PluginVersion_v1* out) noexcept(false);
 
 struct PluginApi_v1 {

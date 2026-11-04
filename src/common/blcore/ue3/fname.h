@@ -1,9 +1,11 @@
 #ifndef BLCORE_UE3_FNAME_H
 #define BLCORE_UE3_FNAME_H
 
-#include <cstdint>
+#include "blcore/blcore.h"
 
 namespace blcore::ue3 {
+
+inline constexpr size_t NAME_SIZE = 1024;
 
 #pragma pack(push, 4)
 

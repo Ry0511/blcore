@@ -1,6 +1,7 @@
 #ifndef BLCORE_BLCORE_H
 #define BLCORE_BLCORE_H
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <filesystem>

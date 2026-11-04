@@ -1,7 +1,7 @@
 #ifndef BLCORE_API_API_H
 #define BLCORE_API_API_H
 
-#include <cstdint>
+#include "blcore/blcore.h"
 
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
 
@@ -22,7 +22,7 @@
 
 namespace blcore {
 
-using ApiResult = std::uint32_t;
+using ApiResult = uint32_t;
 
 inline constexpr ApiResult API_OK = 0;
 inline constexpr ApiResult API_FAIL = 1;

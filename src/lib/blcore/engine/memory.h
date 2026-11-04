@@ -2,21 +2,19 @@
 #define BLCORE_ENGINE_MEMORY_H
 
 #include "blcore/api/memory.h"
-
-#include <cstddef>
-#include <cstdint>
+#include "blcore/blcore.h"
 
 namespace blcore::engine {
 
 // this is here for abi reasons, but BL1 and BL1E both ignore the alignment parameter and always
 //  align GMalloc to 16
-inline constexpr std::uint32_t DEFAULT_ALIGNMENT = 8;
+inline constexpr uint32_t DEFAULT_ALIGNMENT = 8;
 
-inline void* malloc(std::size_t size, std::uint32_t alignment = DEFAULT_ALIGNMENT) {
+inline void* malloc(size_t size, uint32_t alignment = DEFAULT_ALIGNMENT) {
     return blcore_malloc(size, alignment);
 }
 
-inline void* realloc(void* original, std::size_t size, std::uint32_t alignment = DEFAULT_ALIGNMENT) {
+inline void* realloc(void* original, size_t size, uint32_t alignment = DEFAULT_ALIGNMENT) {
     return blcore_realloc(original, size, alignment);
 }
 

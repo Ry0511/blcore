@@ -1,7 +1,8 @@
 #ifndef BLCORE_PROCESS_ARGS_H
 #define BLCORE_PROCESS_ARGS_H
 
-#include <cstddef>
+#include "blcore/blcore.h"
+
 #include <string_view>
 
 namespace blcore::util {
@@ -26,7 +27,7 @@ class ProcessArgs {
 
    private:
     wchar_t** m_Argv{nullptr};
-    std::size_t m_Argc{0};
+    size_t m_Argc{0};
 };
 
 }  // namespace blcore::util
