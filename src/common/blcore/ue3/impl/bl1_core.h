@@ -4,8 +4,10 @@
 #include "blcore/blcore.h"
 #include "blcore/ue3/field.h"
 #include "blcore/ue3/fname.h"
+#include "blcore/ue3/fimplementedinterface.h"
 #include "blcore/ue3/fwd.h"
 #include "blcore/ue3/tarray.h"
+#include "blcore/ue3/tmap/tmap.h"
 
 namespace blcore::bl1 {
 
@@ -49,11 +51,16 @@ struct UFunction {
     using Func              = Field<void*, 0xB0>;
 };
 
+struct UState {
+    using FuncMap = Field<ue3::TMap<ue3::FName, ue3::UFunction*>, 0xAC>;
+};
+
 struct UClass {
-    using ClassFlags         = Field<uint32_t, 0xE8>;
-    using ClassCastFlags     = Field<uint32_t, 0xEC>;
-    using ClassDefaultObject = Field<ue3::UObject*, 0x154>;
-    using ClassConstructor   = Field<void*, 0x158>;
+    using ClassFlags                      = Field<uint32_t, 0xE8>;
+    using ClassCastFlags                  = Field<uint32_t, 0xEC>;
+    using ClassDefaultObject              = Field<ue3::UObject*, 0x154>;
+    using ClassConstructor                = Field<void*, 0x158>;
+    using ComponentNameToDefaultObjectMap = Field<ue3::TMap<ue3::FName, ue3::UObject*>, 0x164>;
 };
 
 struct UProperty {
@@ -62,6 +69,18 @@ struct UProperty {
     using PropertyFlags    = Field<uint64_t, 0x4C>;
     using Offset           = Field<int32_t, 0x64>;
     using PropertyLinkNext = Field<ue3::UProperty*, 0x68>;
+};
+
+struct UObjectProperty {
+    using PropertyClass = Field<ue3::UClass*, 0x8C>;
+};
+
+struct UArrayProperty {
+    using Inner = Field<ue3::UProperty*, 0x8C>;
+};
+
+struct UStructProperty {
+    using Struct = Field<ue3::UStruct*, 0x8C>;
 };
 
 struct UEnum {

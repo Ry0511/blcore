@@ -6,11 +6,11 @@
 #include "blcore/ue3/field.h"
 #include "blcore/ue3/fwd.h"
 #include "blcore/ue3/layout.h"
-#include "blcore/ue3/ustruct.h"
+#include "blcore/ue3/ustate.h"
 
 namespace blcore::ue3 {
 
-struct UClass : UStruct {
+struct UClass : UState {
     BLCORE_MAPPED_CLASS(UClass)
 
     BLCORE_UE3_FIELD(ClassFlags)
@@ -18,6 +18,8 @@ struct UClass : UStruct {
     BLCORE_UE3_FIELD(ClassWithin)
     BLCORE_UE3_FIELD(ClassDefaultObject)
     BLCORE_UE3_FIELD(ClassConstructor)
+    BLCORE_UE3_FIELD(ComponentNameToDefaultObjectMap)
+    BLCORE_UE3_FIELD(Interfaces)
 };
 
 }  // namespace blcore::ue3
