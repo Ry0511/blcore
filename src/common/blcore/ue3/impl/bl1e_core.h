@@ -5,6 +5,7 @@
 #include "blcore/ue3/mapping/field.h"
 #include "blcore/ue3/fname.h"
 #include "blcore/ue3/mapping/fwd.h"
+#include "blcore/ue3/mapping/vfunc.h"
 #include "blcore/ue3/tarray.h"
 #include "blcore/ue3/tmap/tmap.h"
 #include "blcore/ue3/uobject/fimplementedinterface.h"
@@ -12,6 +13,7 @@
 namespace blcore::bl1e {
 
 using ue3::Field;
+using ue3::VFunc;
 
 struct UObject {
     using VfTableObject   = Field<uintptr_t, 0x00>;
@@ -27,6 +29,8 @@ struct UObject {
     using Name            = Field<ue3::FName, 0x48>;
     using Class           = Field<ue3::UClass*, 0x50>;
     using ObjectArchetype = Field<ue3::UObject*, 0x58>;
+
+    using Rename = VFunc<uint32_t(const wchar_t*, ue3::UObject*, uint32_t), 42>;
 };
 
 struct UField {

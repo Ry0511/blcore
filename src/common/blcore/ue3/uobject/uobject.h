@@ -7,6 +7,7 @@
 #include "blcore/ue3/fname.h"
 #include "blcore/ue3/mapping/fwd.h"
 #include "blcore/ue3/mapping/layout.h"
+#include "blcore/ue3/mapping/vfunc.h"
 
 namespace blcore::ue3 {
 
@@ -26,6 +27,8 @@ struct UObject {
     BLCORE_UE3_FIELD(Name)
     BLCORE_UE3_FIELD(Class)
     BLCORE_UE3_FIELD(ObjectArchetype)
+
+    BLCORE_UE3_VFUNC(Rename)
 };
 
 }  // namespace blcore::ue3
