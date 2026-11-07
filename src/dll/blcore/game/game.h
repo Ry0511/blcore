@@ -3,11 +3,12 @@
 
 #include "blcore/blcore.h"
 #include "blcore/plugin/plugin_runtime.h"
-#include "blcore/ue3/fwd.h"
+#include "blcore/ue3/mapping/fwd.h"
 #include "blcore/ue3/tarray.h"
 
 namespace blcore::game {
 
+// TODO: revisit this one
 struct Globals {
     ue3::TArray<ue3::UObject*>* gobjects{nullptr};
     ue3::TArray<ue3::FNameEntry*>* gnames{nullptr};

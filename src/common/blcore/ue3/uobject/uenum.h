@@ -1,12 +1,12 @@
-#ifndef BLCORE_UE3_UENUM_H
-#define BLCORE_UE3_UENUM_H
+#ifndef BLCORE_UE3_UOBJECT_UENUM_H
+#define BLCORE_UE3_UOBJECT_UENUM_H
 
 #include "blcore/ue3/impl/bl1_core.h"
 #include "blcore/ue3/impl/bl1e_core.h"
-#include "blcore/ue3/field.h"
+#include "blcore/ue3/mapping/field.h"
 #include "blcore/ue3/fname.h"
-#include "blcore/ue3/fwd.h"
-#include "blcore/ue3/layout.h"
+#include "blcore/ue3/mapping/fwd.h"
+#include "blcore/ue3/mapping/layout.h"
 #include "blcore/ue3/tarray.h"
 #include "blcore/ue3/uobject/ufield.h"
 
@@ -20,4 +20,4 @@ struct UEnum : UField {
 
 }  // namespace blcore::ue3
 
-#endif  // BLCORE_UE3_UENUM_H
+#endif  // BLCORE_UE3_UOBJECT_UENUM_H

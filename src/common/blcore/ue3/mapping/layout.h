@@ -1,5 +1,5 @@
-#ifndef BLCORE_UE3_LAYOUT_H
-#define BLCORE_UE3_LAYOUT_H
+#ifndef BLCORE_UE3_MAPPING_LAYOUT_H
+#define BLCORE_UE3_MAPPING_LAYOUT_H
 
 namespace blcore {
 
@@ -18,4 +18,4 @@ namespace layout = bl1e;
 
 }  // namespace blcore
 
-#endif  // BLCORE_UE3_LAYOUT_H
+#endif  // BLCORE_UE3_MAPPING_LAYOUT_H

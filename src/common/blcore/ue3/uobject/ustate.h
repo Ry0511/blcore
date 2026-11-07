@@ -3,9 +3,9 @@
 
 #include "blcore/ue3/impl/bl1_core.h"
 #include "blcore/ue3/impl/bl1e_core.h"
-#include "blcore/ue3/field.h"
-#include "blcore/ue3/fwd.h"
-#include "blcore/ue3/layout.h"
+#include "blcore/ue3/mapping/field.h"
+#include "blcore/ue3/mapping/fwd.h"
+#include "blcore/ue3/mapping/layout.h"
 #include "blcore/ue3/uobject/ustruct.h"
 
 namespace blcore::ue3 {

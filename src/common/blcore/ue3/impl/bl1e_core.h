@@ -2,12 +2,12 @@
 #define BLCORE_UE3_IMPL_BL1E_CORE_H
 
 #include "blcore/blcore.h"
-#include "blcore/ue3/field.h"
+#include "blcore/ue3/mapping/field.h"
 #include "blcore/ue3/fname.h"
-#include "blcore/ue3/fimplementedinterface.h"
-#include "blcore/ue3/fwd.h"
+#include "blcore/ue3/mapping/fwd.h"
 #include "blcore/ue3/tarray.h"
 #include "blcore/ue3/tmap/tmap.h"
+#include "blcore/ue3/uobject/fimplementedinterface.h"
 
 namespace blcore::bl1e {
 

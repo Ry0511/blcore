@@ -1,5 +1,5 @@
-#ifndef BLCORE_UE3_FIELD_H
-#define BLCORE_UE3_FIELD_H
+#ifndef BLCORE_UE3_MAPPING_FIELD_H
+#define BLCORE_UE3_MAPPING_FIELD_H
 
 #include "blcore/blcore.h"
 
@@ -43,4 +43,4 @@ template <typename T, typename Self>
 
 // NOLINTEND(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
 
-#endif  // BLCORE_UE3_FIELD_H
+#endif  // BLCORE_UE3_MAPPING_FIELD_H

@@ -2,7 +2,7 @@
 #define BLCORE_ENGINE_GNAMES_H
 
 #include "blcore/blcore.h"
-#include "blcore/ue3/fwd.h"
+#include "blcore/ue3/mapping/fwd.h"
 #include "blcore/ue3/tarray.h"
 
 #include <span>

@@ -1,5 +1,5 @@
-#ifndef BLCORE_UE3_FWD_H
-#define BLCORE_UE3_FWD_H
+#ifndef BLCORE_UE3_MAPPING_FWD_H
+#define BLCORE_UE3_MAPPING_FWD_H
 
 // NOLINTBEGIN(bugprone-forward-declaration-namespace)
 
@@ -23,4 +23,4 @@ struct FNameEntry;
 
 // NOLINTEND(bugprone-forward-declaration-namespace)
 
-#endif  // BLCORE_UE3_FWD_H
+#endif  // BLCORE_UE3_MAPPING_FWD_H
