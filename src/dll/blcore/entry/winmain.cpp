@@ -5,10 +5,8 @@
 #include <Windows.h>
 
 #include <MinHook.h>
-#include <libhat.hpp>
 
 #include "blcore/game/game.h"
-#include "blcore/plugin/loader.h"
 #include "blcore/util/common.h"
 #include "blcore/util/logging.h"
 #include "blcore/util/logging_backend.h"
@@ -23,7 +21,8 @@ namespace blcore {
 namespace {
 
 DWORD WINAPI startup_thread(LPVOID h_module) {
-    logging::set_console_logging(true);
+    // TODO: need to revisit this one, just threw something together quickly but its got its own issues
+    logging::set_console_logging(false);
     logging::add_log_file(util::module_dir(h_module) / "blcore.log");
     logging::initialise();
     logging::log(logging::Level::Info, get_version_string());
@@ -45,31 +44,16 @@ IsDebuggerPresentFn original_is_debugger_present = nullptr;
 std::atomic_bool plugins_loaded{false};
 std::mutex api_mutex;
 
-// pretty much a carbon copy of the unrealsdk here
-bool is_unpacked() {
-#ifdef WILLOW64
-    static constexpr auto ENTRY_SIG = hat::compile_signature<
-        "48 8B D8 48 83 38 00 74 ?? 48 8B C8 E8 ?? ?? ?? ?? 84 C0">();
-#elifdef WILLOW
-    static constexpr auto ENTRY_SIG = hat::compile_signature<
-        "6A 58 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 33 DB">();
-#endif
-    return hat::find_pattern(ENTRY_SIG, ".text").has_result();
-}
-
 BOOL WINAPI is_debugger_present_hook() {
     if (plugins_loaded) {
         return original_is_debugger_present();
     }
 
     const std::scoped_lock lock{api_mutex};
-    if (!plugins_loaded && is_unpacked()) {
+    if (!plugins_loaded && game::current().is_unpacked()) {
         plugins_loaded = true;
         try {
-            // we only start loading plugins once the game has been unpacked, we also do it here
-            // while we have the game blocked so that any on_load plugin code can run immediately.
-            game::init_globals();
-            load_plugins(util::module_dir(blcore_module) / "blcore");
+            game::current().start(util::module_dir(blcore_module) / "blcore");
         } catch (const std::exception& ex) {
             BLCORE_ERROR("Loading plugins failed: {}", ex.what());
         }
@@ -92,7 +76,7 @@ void WINAPI exit_process_hook(UINT exit_code) {
         BLCORE_INFO("Shutting down");
         {
             const std::scoped_lock lock{api_mutex};
-            shutdown_plugins();
+            game::current().shutdown();
         }
         // we do this in detach as well, its better to do it here but both places don't hurt
         logging::terminate(true);

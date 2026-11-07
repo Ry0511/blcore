@@ -1,5 +1,5 @@
-#ifndef BLCORE_PLUGIN_LOADER_H
-#define BLCORE_PLUGIN_LOADER_H
+#ifndef BLCORE_PLUGIN_PLUGIN_RUNTIME_H
+#define BLCORE_PLUGIN_PLUGIN_RUNTIME_H
 
 #include "blcore/blcore.h"
 #include "blcore/plugin/plugin_api_v1.h"
@@ -14,15 +14,21 @@
 namespace blcore {
 
 struct PluginHandle {
-    fs::path path;                              // absolute path to .dll
-    void* module = nullptr;                     // hmodule
-    std::string name;                           // plugin name from api (or dll name)
-    std::optional<PluginApi_v1> plugin_api_v1;  // entry point api
-    bool unload_requested = false;              // plugin will be unloaded soon
+    fs::path path;
+    void* module = nullptr;
+    std::string name;
+    std::optional<PluginApi_v1> plugin_api_v1;
+    bool unload_requested = false;
 };
 
-void load_plugins(const fs::path& dir);
-void shutdown_plugins();
+class PluginRuntime {
+   public:
+    void load(const fs::path& dir);
+    void shutdown();
+
+   private:
+    std::vector<std::unique_ptr<PluginHandle>> m_Plugins;
+};
 
 template <typename Fn>
 bool invoke_guarded(std::string_view what, Fn&& fn) {
@@ -39,4 +45,4 @@ bool invoke_guarded(std::string_view what, Fn&& fn) {
 
 }  // namespace blcore
 
-#endif  // BLCORE_PLUGIN_LOADER_H
+#endif  // BLCORE_PLUGIN_PLUGIN_RUNTIME_H

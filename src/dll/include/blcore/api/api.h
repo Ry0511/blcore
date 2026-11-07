@@ -26,6 +26,7 @@ using ApiResult = uint32_t;
 
 inline constexpr ApiResult API_OK = 0;
 inline constexpr ApiResult API_FAIL = 1;
+inline constexpr ApiResult API_UNAVAILABLE = 2;
 
 }  // namespace blcore
 

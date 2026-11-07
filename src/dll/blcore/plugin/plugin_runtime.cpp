@@ -1,6 +1,6 @@
 #include "blcore/pch.h"
 
-#include "blcore/plugin/loader.h"
+#include "blcore/plugin/plugin_runtime.h"
 #include "blcore/util/common.h"
 #include "blcore/util/logging.h"
 
@@ -14,8 +14,6 @@ namespace {
 
 constexpr auto ENTRY_NAME = "blcore_plugin_entry";
 using EntryFn = ApiResult(BLCORE_CALL*)(PluginHandle* handle) noexcept(false);
-
-std::vector<std::unique_ptr<PluginHandle>> plugins;
 
 std::string plugin_name(const PluginApi_v1& api, const fs::path& path) {
     const char* name = nullptr;
@@ -93,7 +91,7 @@ std::unique_ptr<PluginHandle> load_plugin(const fs::path& path) {
 // | PUBLIC |
 ////////////////////////////////////////////////////////////////////////////////
 
-void load_plugins(const fs::path& dir) {
+void PluginRuntime::load(const fs::path& dir) {
     std::error_code error{};
     if (!fs::is_directory(dir, error)) {
         BLCORE_INFO("No plugin folder at {}", util::narrow(dir.wstring()));
@@ -115,12 +113,12 @@ void load_plugins(const fs::path& dir) {
     // load and store all valid plugins
     for (const auto& path : paths) {
         if (auto handle = load_plugin(path)) {
-            plugins.push_back(std::move(handle));
+            m_Plugins.push_back(std::move(handle));
         }
     }
 
     // invoke on_load on all plugins
-    for (const auto& handle : plugins) {
+    for (const auto& handle : m_Plugins) {
         if (handle->plugin_api_v1) {
             BLCORE_INFO("loading plugin {}", handle->name);
             ApiResult result{API_FAIL};
@@ -134,21 +132,23 @@ void load_plugins(const fs::path& dir) {
     }
 
     // unload any plugins that requested to be unloaded or raised an exception in on_load
-    for (const auto& handle : plugins) {
+    for (const auto& handle : m_Plugins) {
         if (handle->unload_requested && handle->plugin_api_v1) {
             BLCORE_INFO("unloading plugin {}", handle->name);
             invoke_guarded(handle->name, handle->plugin_api_v1->on_shutdown);
             util::free_library(handle->module);
         }
     }
-    std::erase_if(plugins, [](const auto& handle) { return handle->unload_requested; });
+    std::erase_if(m_Plugins, [](const auto& handle) { return handle->unload_requested; });
 }
 
-void shutdown_plugins() {
-    for (const auto& handle : std::views::reverse(plugins)) {
+void PluginRuntime::shutdown() {
+    for (const auto& handle : std::views::reverse(m_Plugins)) {
         if (handle->plugin_api_v1) {
             invoke_guarded(handle->name, handle->plugin_api_v1->on_shutdown);
         }
     }
+    m_Plugins.clear();
 }
+
 }  // namespace blcore

@@ -1,21 +1,24 @@
 #include "blcore/pch.h"
 
-#ifdef WILLOW64
+#include "blcore/game/bl1e/game_impl.h"
 
-#include "blcore/game/game.h"
+namespace blcore::game::bl1e {
 
-namespace blcore::game {
+// TODO: implement this
 
-void* malloc(void* /*gmalloc*/, size_t /*size*/, uint32_t /*alignment*/) {
+void* GameImpl::malloc(void* /*gmalloc*/, size_t /*size*/, uint32_t /*alignment*/) const {
     return nullptr;
 }
 
-void* realloc(void* /*gmalloc*/, void* /*original*/, size_t /*size*/, uint32_t /*alignment*/) {
+void* GameImpl::realloc(
+    void* /*gmalloc*/,
+    void* /*original*/,
+    size_t /*size*/,
+    uint32_t /*alignment*/
+) const {
     return nullptr;
 }
 
-void free(void* /*gmalloc*/, void* /*data*/) {}
+void GameImpl::free(void* /*gmalloc*/, void* /*data*/) const {}
 
-}  // namespace blcore::game
-
-#endif  // WILLOW64
+}  // namespace blcore::game::bl1e

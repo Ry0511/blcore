@@ -1,13 +1,11 @@
 #include "blcore/pch.h"
 
-#ifdef WILLOW
-
 #include <libhat.hpp>
 
-#include "blcore/game/game.h"
+#include "blcore/game/bl1/game_impl.h"
 #include "blcore/util/sigscan.h"
 
-namespace blcore::game {
+namespace blcore::game::bl1 {
 
 ////////////////////////////////////////////////////////////////////////////////
 // | PRIVATE |
@@ -53,7 +51,7 @@ constexpr auto GNATIVES_SIG = hat::compile_signature<
 // | PUBLIC |
 ////////////////////////////////////////////////////////////////////////////////
 
-void find_globals(Globals& out) {
+void GameImpl::find_globals(Globals& out) const {
     out.gobjects = sigscan::find_absolute_address<ue3::TArray<ue3::UObject*>>(
         "GObjects",
         GOBJECTS_SIG,
@@ -68,6 +66,4 @@ void find_globals(Globals& out) {
     out.gnatives = sigscan::find_absolute_address("GNatives", GNATIVES_SIG, GNATIVES_OFFSET);
 }
 
-}  // namespace blcore::game
-
-#endif  // WILLOW
+}  // namespace blcore::game::bl1

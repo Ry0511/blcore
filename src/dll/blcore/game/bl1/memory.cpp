@@ -1,10 +1,8 @@
 #include "blcore/pch.h"
 
-#ifdef WILLOW
+#include "blcore/game/bl1/game_impl.h"
 
-#include "blcore/game/game.h"
-
-namespace blcore::game {
+namespace blcore::game::bl1 {
 
 ////////////////////////////////////////////////////////////////////////////////
 // | PRIVATE |
@@ -31,29 +29,27 @@ struct FMalloc {
 // | PUBLIC |
 ////////////////////////////////////////////////////////////////////////////////
 
-void* malloc(void* gmalloc, size_t size, uint32_t alignment) {
+void* GameImpl::malloc(void* gmalloc, size_t size, uint32_t alignment) const {
     auto* self = static_cast<FMalloc*>(gmalloc);
     return self->vtable->malloc(self, static_cast<uint32_t>(size), alignment);
 }
 
-void* realloc(
+void* GameImpl::realloc(
     void* gmalloc,  // NOLINT(bugprone-easily-swappable-parameters)
     void* original,
     size_t size,
     uint32_t alignment
-) {
+) const {
     auto* self = static_cast<FMalloc*>(gmalloc);
     return self->vtable->realloc(self, original, static_cast<uint32_t>(size), alignment);
 }
 
-void free(
+void GameImpl::free(
     void* gmalloc,  // NOLINT(bugprone-easily-swappable-parameters)
     void* data
-) {
+) const {
     auto* self = static_cast<FMalloc*>(gmalloc);
     self->vtable->free(self, data);
 }
 
-}  // namespace blcore::game
-
-#endif  // WILLOW
+}  // namespace blcore::game::bl1

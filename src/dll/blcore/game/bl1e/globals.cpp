@@ -1,16 +1,12 @@
 #include "blcore/pch.h"
 
-#ifdef WILLOW64
-
-#include "blcore/game/game.h"
+#include "blcore/game/bl1e/game_impl.h"
 #include "blcore/util/logging.h"
 
-namespace blcore::game {
+namespace blcore::game::bl1e {
 
-void find_globals(Globals& /*out*/) {
+void GameImpl::find_globals(Globals& /*out*/) const {
     BLCORE_WARN("Engine globals aren't mapped for BL1E yet");
 }
 
-}  // namespace blcore::game
-
-#endif  // WILLOW64
+}  // namespace blcore::game::bl1e

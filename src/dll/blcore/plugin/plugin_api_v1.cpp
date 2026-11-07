@@ -1,6 +1,6 @@
 #include "blcore/pch.h"
 
-#include "blcore/plugin/loader.h"
+#include "blcore/plugin/plugin_runtime.h"
 #include "blcore/plugin/plugin_api_v1.h"
 #include "blcore/util/common.h"
 #include "blcore/util/logging.h"
