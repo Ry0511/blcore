@@ -6,7 +6,7 @@
 #include "blcore/ue3/field.h"
 #include "blcore/ue3/fwd.h"
 #include "blcore/ue3/layout.h"
-#include "blcore/ue3/uobject.h"
+#include "blcore/ue3/uobject/uobject.h"
 
 namespace blcore::ue3 {
 

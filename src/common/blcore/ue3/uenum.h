@@ -8,7 +8,7 @@
 #include "blcore/ue3/fwd.h"
 #include "blcore/ue3/layout.h"
 #include "blcore/ue3/tarray.h"
-#include "blcore/ue3/ufield.h"
+#include "blcore/ue3/uobject/ufield.h"
 
 namespace blcore::ue3 {
 

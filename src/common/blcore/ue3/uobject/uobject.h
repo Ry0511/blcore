@@ -1,5 +1,5 @@
-#ifndef BLCORE_UE3_UOBJECT_H
-#define BLCORE_UE3_UOBJECT_H
+#ifndef BLCORE_UE3_UOBJECT_UOBJECT_H
+#define BLCORE_UE3_UOBJECT_UOBJECT_H
 
 #include "blcore/ue3/impl/bl1_core.h"
 #include "blcore/ue3/impl/bl1e_core.h"
@@ -30,4 +30,4 @@ struct UObject {
 
 }  // namespace blcore::ue3
 
-#endif  // BLCORE_UE3_UOBJECT_H
+#endif  // BLCORE_UE3_UOBJECT_UOBJECT_H
