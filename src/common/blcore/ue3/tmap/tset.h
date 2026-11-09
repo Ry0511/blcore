@@ -45,18 +45,20 @@ struct TSet {
     [[nodiscard]] int32_t max_index() const { return Elements.max_index(); }
     [[nodiscard]] size_t size() const { return Elements.size(); }
     [[nodiscard]] bool is_allocated(int32_t index) const { return Elements.is_allocated(index); }
-    T& operator[](int32_t index) const { return Elements[index].Value; }
+    T& operator[](int32_t index) const { return Elements.Data.Data[index].ElementData.Value; }
 
     void remove(int32_t index) {
-        const FElement& removed = Elements[index];
+        const FElement& removed = Elements.Data.Data[index].ElementData;
+
         if (HashSize > 0) {
             int32_t* next = &Hash.data()[removed.HashIndex & (HashSize - 1)];
+
             while (*next != INDEX_NONE) {
                 if (*next == index) {
                     *next = removed.HashNextId;
                     break;
                 }
-                next = &Elements[*next].HashNextId;
+                next = &Elements.Data.Data[*next].ElementData.HashNextId;
             }
         }
         Elements.remove(index);

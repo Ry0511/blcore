@@ -30,7 +30,7 @@ struct TSparseArray {
         }
 
         T& operator*() const {
-            return (*m_Array)[m_Index];
+            return m_Array->Data.Data[m_Index].ElementData;
         }
 
         Iterator& operator++() {
