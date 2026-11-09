@@ -42,7 +42,7 @@ struct UStruct {
     using SuperField     = Field<ue3::UStruct*, 0x3C>;
     using ScriptText     = Field<void*, 0x44>;
     using Children       = Field<ue3::UField*, 0x4C>;
-    using PropertiesSize = Field<int32_t, 0x50>;
+    using PropertiesSize = Field<uint16_t, 0x50>;
     using PropertyLink   = Field<ue3::UProperty*, 0x70>;
 };
 
