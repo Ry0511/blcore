@@ -9,7 +9,9 @@
 #include "blcore/engine/gmalloc.h"
 #include "blcore/engine/gnames.h"
 #include "blcore/engine/gobjects.h"
+#include "blcore/engine/object.h"
 #include "blcore/ue3/mapping/fwd.h"
+#include "blcore/ue3/uobject/uclass.h"
 
 namespace blcore::engine {
 
@@ -36,6 +38,26 @@ inline ue3::UObject* static_find_object(
 
 inline void* static_find_object_address() {
     return blcore_get_static_find_object();
+}
+
+inline ue3::UObject* find_object(const wchar_t* path) {
+    return static_find_object(nullptr, nullptr, path);
+}
+
+template <typename T = ue3::UObject>
+T* find_object(ue3::UClass* cls, const wchar_t* path) {
+    return static_cast<T*>(static_find_object(cls, nullptr, path));
+}
+
+inline ue3::UClass* find_class(const wchar_t* path) {
+    static ue3::UClass* class_class = nullptr;
+    if (class_class == nullptr) {
+        class_class = find_object<ue3::UClass>(nullptr, L"Core.Class");
+    }
+
+    return (class_class != nullptr)
+               ? find_object<ue3::UClass>(class_class, path)
+               : nullptr;
 }
 
 }  // namespace blcore::engine
