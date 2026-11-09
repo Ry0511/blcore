@@ -39,8 +39,18 @@ T* find_absolute_address(std::string_view name, const Signature& signature, size
         return nullptr;
     }
 
-    T* address = nullptr;
-    std::memcpy(static_cast<void*>(&address), result.get() + offset, sizeof(T*));
+    const std::byte* operand = result.get() + offset;
+    uintptr_t value{0};
+    if constexpr (sizeof(uintptr_t) == sizeof(uint64_t)) {
+        int32_t displacement{0};
+        constexpr auto displacement_size = sizeof(uint32_t);
+        std::memcpy(&displacement, operand, displacement_size);
+        value = reinterpret_cast<uintptr_t>(operand) + displacement_size + displacement;
+    } else {
+        std::memcpy(&value, operand, sizeof(value));
+    }
+
+    auto* address = reinterpret_cast<T*>(value);
     BLCORE_INFO("Found {} at {}", name, static_cast<const void*>(address));
     return address;
 }
