@@ -11,15 +11,21 @@ namespace blcore::engine {
 
 class GNames {
    public:
-    GNames();
+    explicit GNames(ue3::TArray<ue3::FNameEntry*>* array) : m_Entries{array} {}
+
+    [[nodiscard]] ue3::TArray<ue3::FNameEntry*>* data() const {
+        return m_Entries;
+    }
 
     [[nodiscard]] size_t size() const {
         return entries().size();
     }
 
     [[nodiscard]] ue3::FNameEntry* at(size_t index) const {
-        const std::span<ue3::FNameEntry*> entries = this->entries();
-        return (index < entries.size()) ? entries.subspan(index, 1).front() : nullptr;
+        const std::span<ue3::FNameEntry*> items = entries();
+        return (index < items.size())
+                   ? items.subspan(index, 1).front()
+                   : nullptr;
     }
 
     [[nodiscard]] auto begin() const {
@@ -33,7 +39,11 @@ class GNames {
    private:
     ue3::TArray<ue3::FNameEntry*>* m_Entries{nullptr};
 
-    [[nodiscard]] std::span<ue3::FNameEntry*> entries() const;
+    [[nodiscard]] std::span<ue3::FNameEntry*> entries() const {
+        return (m_Entries != nullptr)
+                   ? m_Entries->span()
+                   : std::span<ue3::FNameEntry*>{};
+    }
 };
 
 }  // namespace blcore::engine

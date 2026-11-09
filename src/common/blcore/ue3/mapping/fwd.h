@@ -18,6 +18,7 @@ struct UStructProperty;
 struct UEnum;
 struct UPackage;
 struct FNameEntry;
+struct FMalloc;
 
 }  // namespace blcore::ue3
 

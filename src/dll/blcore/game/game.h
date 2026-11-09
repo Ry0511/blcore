@@ -2,40 +2,36 @@
 #define BLCORE_GAME_GAME_H
 
 #include "blcore/blcore.h"
+#include "blcore/engine/gmalloc.h"
+#include "blcore/engine/gnames.h"
+#include "blcore/engine/gobjects.h"
 #include "blcore/plugin/plugin_runtime.h"
 #include "blcore/ue3/mapping/fwd.h"
-#include "blcore/ue3/tarray.h"
 
 namespace blcore::game {
 
-// TODO: revisit this one
-struct Globals {
-    ue3::TArray<ue3::UObject*>* gobjects{nullptr};
-    ue3::TArray<ue3::FNameEntry*>* gnames{nullptr};
-    void** gmalloc{nullptr};
-    void** gnatives{nullptr};
-};
-
 class Game {
    public:
+    using StaticFindObjectFn = ue3::UObject*(__cdecl*)(ue3::UClass*, ue3::UObject*, const wchar_t*, uint32_t);
+
     virtual ~Game() = default;
 
     void start(const fs::path& plugin_dir);
     void shutdown();
 
-    [[nodiscard]] const Globals& globals() const;
     [[nodiscard]] virtual std::string_view name() const = 0;
     [[nodiscard]] virtual bool is_unpacked() const = 0;
 
-    virtual void* malloc(void* gmalloc, size_t size, uint32_t alignment) const = 0;
-    virtual void* realloc(void* gmalloc, void* original, size_t size, uint32_t alignment) const = 0;
-    virtual void free(void* gmalloc, void* data) const = 0;
+    [[nodiscard]] virtual engine::GObjects gobjects() const = 0;
+    [[nodiscard]] virtual engine::GNames gnames() const = 0;
+    [[nodiscard]] virtual engine::GMalloc gmalloc() const = 0;
+
+    [[nodiscard]] virtual StaticFindObjectFn static_find_object() const = 0;
 
    private:
-    virtual void find_globals(Globals& out) const = 0;
+    virtual void find_globals() = 0;
     virtual void apply_patches() const = 0;
 
-    Globals m_Globals;
     PluginRuntime m_Plugins;
 };
 

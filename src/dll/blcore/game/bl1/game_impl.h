@@ -2,6 +2,8 @@
 #define BLCORE_GAME_BL1_GAME_IMPL_H
 
 #include "blcore/game/game.h"
+#include "blcore/ue3/mapping/fwd.h"
+#include "blcore/ue3/tarray.h"
 
 namespace blcore::game::bl1 {
 
@@ -10,13 +12,21 @@ class GameImpl final : public Game {
     [[nodiscard]] std::string_view name() const override;
     [[nodiscard]] bool is_unpacked() const override;
 
-    void* malloc(void* gmalloc, size_t size, uint32_t alignment) const override;
-    void* realloc(void* gmalloc, void* original, size_t size, uint32_t alignment) const override;
-    void free(void* gmalloc, void* data) const override;
+    [[nodiscard]] engine::GObjects gobjects() const override;
+    [[nodiscard]] engine::GNames gnames() const override;
+    [[nodiscard]] engine::GMalloc gmalloc() const override;
+
+    [[nodiscard]] StaticFindObjectFn static_find_object() const override;
 
    private:
-    void find_globals(Globals& out) const override;
+    void find_globals() override;
     void apply_patches() const override;
+
+    ue3::TArray<ue3::UObject*>* m_GObjects{nullptr};
+    ue3::TArray<ue3::FNameEntry*>* m_GNames{nullptr};
+    ue3::FMalloc** m_GMalloc{nullptr};
+    void** m_GNatives{nullptr};
+    StaticFindObjectFn m_StaticFindObject{nullptr};
 };
 
 }  // namespace blcore::game::bl1

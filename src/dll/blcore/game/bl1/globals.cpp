@@ -45,25 +45,64 @@ constexpr auto GNATIVES_SIG = hat::compile_signature<
     " 8D 4D ??"              // lea ecx, [ebp - 0x44]
     >();
 
+// UObject* UObject::StaticFindObject(UClass* Class, UObject* InOuter, const TCHAR* Name, UBOOL ExactClass)
+constexpr auto STATIC_FIND_OBJECT_SIG = hat::compile_signature<
+    " 6A FF"              // push -1
+    " 68 ?? ?? ?? ??"     // push handler
+    " 64 A1 ?? ?? ?? ??"  // mov eax, fs:[0]
+    " 50"                 // push eax
+    " 83 EC 24"           // sub esp, 0x24
+    " 53"                 // push ebx
+    " 55"                 // push ebp
+    " 56"                 // push esi
+    " 57"                 // push edi
+    " A1 ?? ?? ?? ??"     // mov eax, [security_cookie]
+    " 33 C4"              // xor eax, esp
+    " 50"                 // push eax
+    " 8D 44 24 ??"        // lea eax, [esp + 0x38]
+    " 64 A3 ?? ?? ?? ??"  // mov fs:[0], eax
+    " 8B 74 24 ??"        // mov esi, [esp + 0x4c] (InOuter)
+    " 8B 7C 24 ??"        // mov edi, [esp + 0x50] (Name)
+    >();
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // | PUBLIC |
 ////////////////////////////////////////////////////////////////////////////////
 
-void GameImpl::find_globals(Globals& out) const {
-    out.gobjects = sigscan::find_absolute_address<ue3::TArray<ue3::UObject*>>(
+void GameImpl::find_globals() {
+    m_GObjects = sigscan::find_absolute_address<ue3::TArray<ue3::UObject*>>(
         "GObjects",
         GOBJECTS_SIG,
         GOBJECTS_OFFSET
     );
-    out.gnames = sigscan::find_absolute_address<ue3::TArray<ue3::FNameEntry*>>(
+    m_GNames = sigscan::find_absolute_address<ue3::TArray<ue3::FNameEntry*>>(
         "GNames",
         GNAMES_SIG,
         GNAMES_OFFSET
     );
-    out.gmalloc = sigscan::find_absolute_address("GMalloc", GMALLOC_SIG, GMALLOC_OFFSET);
-    out.gnatives = sigscan::find_absolute_address("GNatives", GNATIVES_SIG, GNATIVES_OFFSET);
+    m_GMalloc = sigscan::find_absolute_address<ue3::FMalloc*>("GMalloc", GMALLOC_SIG, GMALLOC_OFFSET);
+    m_GNatives = sigscan::find_absolute_address("GNatives", GNATIVES_SIG, GNATIVES_OFFSET);
+    m_StaticFindObject = reinterpret_cast<StaticFindObjectFn>(
+        sigscan::find("StaticFindObject", STATIC_FIND_OBJECT_SIG)
+    );
+}
+
+engine::GObjects GameImpl::gobjects() const {
+    return engine::GObjects{m_GObjects};
+}
+
+engine::GNames GameImpl::gnames() const {
+    return engine::GNames{m_GNames};
+}
+
+engine::GMalloc GameImpl::gmalloc() const {
+    return engine::GMalloc{m_GMalloc};
+}
+
+Game::StaticFindObjectFn GameImpl::static_find_object() const {
+    return m_StaticFindObject;
 }
 
 }  // namespace blcore::game::bl1

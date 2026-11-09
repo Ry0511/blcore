@@ -7,17 +7,13 @@ namespace blcore::game {
 
 void Game::start(const fs::path& plugin_dir) {
     BLCORE_INFO("Starting for {}", name());
-    find_globals(m_Globals);
+    find_globals();
     apply_patches();
     m_Plugins.load(plugin_dir);
 }
 
 void Game::shutdown() {
     m_Plugins.shutdown();
-}
-
-const Globals& Game::globals() const {
-    return m_Globals;
 }
 
 }  // namespace blcore::game

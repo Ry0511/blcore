@@ -99,6 +99,12 @@ struct FNameEntry {
     using UniName  = Field<wchar_t[ue3::NAME_SIZE], 0x14>;
 };
 
+struct FMalloc {
+    using Malloc  = VFunc<void*(uint32_t, uint32_t), 1>;
+    using Realloc = VFunc<void*(void*, uint32_t, uint32_t), 2>;
+    using Free    = VFunc<void(void*), 3>;
+};
+
 }  // namespace blcore::bl1e
 
 #endif  // BLCORE_UE3_IMPL_BL1E_CORE_H
