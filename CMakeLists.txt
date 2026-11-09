@@ -58,11 +58,14 @@ endif ()
 ################################################################################
 
 file(GLOB_RECURSE BLCORE_COMMON_SOURCE_LIST CONFIGURE_DEPENDS src/common/*.cpp src/common/*.h)
+file(GLOB_RECURSE BLCORE_COMMON_HEADER_LIST CONFIGURE_DEPENDS src/common/*.h)
 
 add_library(blcore_common STATIC ${BLCORE_COMMON_SOURCE_LIST})
 
+target_sources(blcore_common PUBLIC FILE_SET HEADERS BASE_DIRS src/common FILES ${BLCORE_COMMON_HEADER_LIST})
 target_include_directories(blcore_common PUBLIC src/common)
 target_compile_definitions(blcore_common PUBLIC ${BLCORE_FLAVOUR})
+target_compile_features(blcore_common PUBLIC cxx_std_23)
 target_link_libraries(blcore_common PRIVATE blcore_settings shell32)
 
 ################################################################################
@@ -83,6 +86,7 @@ set(GIT_POST_CONFIGURE_FILE "${CONFIGURE_FILES_DIR}/blcore/version.inl")
 include(cmake/git_watcher.cmake)
 
 file(GLOB_RECURSE BLCORE_DLL_SOURCE_LIST CONFIGURE_DEPENDS src/dll/*.cpp src/dll/*.h)
+file(GLOB_RECURSE BLCORE_DLL_HEADER_LIST CONFIGURE_DEPENDS src/dll/include/*.h)
 list(APPEND BLCORE_DLL_SOURCE_LIST ${GIT_POST_CONFIGURE_FILE})
 
 add_library(blcore_dll SHARED ${BLCORE_DLL_SOURCE_LIST} src/dll/blcore/version.rc)
@@ -93,6 +97,7 @@ set_target_properties(blcore_dll
     ARCHIVE_OUTPUT_NAME blcore_dll
 )
 
+target_sources(blcore_dll PUBLIC FILE_SET HEADERS BASE_DIRS src/dll/include FILES ${BLCORE_DLL_HEADER_LIST})
 target_include_directories(blcore_dll PUBLIC src/dll/include PRIVATE src/dll ${CONFIGURE_FILES_DIR})
 target_compile_definitions(blcore_dll PRIVATE BLCORE_EXPORTS)
 target_link_libraries(blcore_dll PUBLIC blcore_common libhat::libhat PRIVATE minhook blcore_settings)
@@ -108,12 +113,31 @@ endif ()
 ################################################################################
 
 file(GLOB_RECURSE BLCORE_SOURCE_LIST CONFIGURE_DEPENDS src/lib/*.cpp src/lib/*.h)
+file(GLOB_RECURSE BLCORE_HEADER_LIST CONFIGURE_DEPENDS src/lib/*.h)
 
 add_library(blcore STATIC ${BLCORE_SOURCE_LIST})
 add_library(blcore::blcore ALIAS blcore)
 
+target_sources(blcore PUBLIC FILE_SET HEADERS BASE_DIRS src/lib FILES ${BLCORE_HEADER_LIST})
 target_include_directories(blcore PUBLIC src/lib)
 target_link_libraries(blcore PUBLIC blcore_dll PRIVATE blcore_settings)
+
+################################################################################
+# | HEADER CHECKS |
+################################################################################
+
+option(BLCORE_HEADER_CHECKS "" ${PROJECT_IS_TOP_LEVEL})
+if (BLCORE_HEADER_CHECKS)
+  set_target_properties(blcore_common blcore_dll blcore PROPERTIES VERIFY_INTERFACE_HEADER_SETS ON)
+
+  add_custom_target(blcore_header_checks ALL)
+  add_dependencies(
+      blcore_header_checks
+      blcore_common_verify_interface_header_sets
+      blcore_dll_verify_interface_header_sets
+      blcore_verify_interface_header_sets
+  )
+endif ()
 
 ################################################################################
 # | SAMPLES |
