@@ -24,7 +24,7 @@ void BLCORE_CALL get_version(blcore::PluginVersion_v1* out) {
 blcore::ApiResult BLCORE_CALL on_load() {
     if (!blcore::util::ProcessArgs{}.is_editor()) {
         BLCORE_INFO("[{}] on_load, not the editor so unloading", NAME);
-        return blcore::API_FAIL;
+        return blcore::API_UNAVAILABLE;
     }
     BLCORE_INFO("[{}] on_load", NAME);
     return blcore::API_OK;

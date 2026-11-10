@@ -42,7 +42,7 @@ using IsDebuggerPresentFn = BOOL(WINAPI*)();
 HMODULE blcore_module = nullptr;
 IsDebuggerPresentFn original_is_debugger_present = nullptr;
 std::atomic_bool plugins_loaded{false};
-std::mutex api_mutex;
+std::recursive_mutex api_mutex;
 
 BOOL WINAPI is_debugger_present_hook() {
     if (plugins_loaded) {

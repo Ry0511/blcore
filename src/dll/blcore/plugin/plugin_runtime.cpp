@@ -121,20 +121,26 @@ void PluginRuntime::load(const fs::path& dir) {
     for (const auto& handle : m_Plugins) {
         if (handle->plugin_api_v1) {
             BLCORE_INFO("loading plugin {}", handle->name);
+            handle->started = true;
             ApiResult result{API_FAIL};
             const bool success = invoke_guarded(handle->name, [&result, &handle] {
                 result = handle->plugin_api_v1->on_load();
             });
-            // not all plugins will want to stay loaded such as editor only, make only, game only
-            //  plugins only run in certain contexts.
+            // not all plugins will want to stay loaded since some will only run in certain context
+            // i.e., editor only
             handle->unload_requested = !success || result != API_OK;
+            if (success && result == API_UNAVAILABLE) {
+                BLCORE_INFO("{} is not for this run configuration", handle->name);
+            } else if (handle->unload_requested) {
+                BLCORE_ERROR("{} failed to load", handle->name);
+            }
         }
     }
 
     // unload any plugins that requested to be unloaded or raised an exception in on_load
     for (const auto& handle : m_Plugins) {
         if (handle->unload_requested && handle->plugin_api_v1) {
-            BLCORE_INFO("unloading plugin {}", handle->name);
+            handle->started = false;
             invoke_guarded(handle->name, handle->plugin_api_v1->on_shutdown);
             util::free_library(handle->module);
         }
@@ -144,7 +150,7 @@ void PluginRuntime::load(const fs::path& dir) {
 
 void PluginRuntime::shutdown() {
     for (const auto& handle : std::views::reverse(m_Plugins)) {
-        if (handle->plugin_api_v1) {
+        if (handle->started && handle->plugin_api_v1) {
             invoke_guarded(handle->name, handle->plugin_api_v1->on_shutdown);
         }
     }

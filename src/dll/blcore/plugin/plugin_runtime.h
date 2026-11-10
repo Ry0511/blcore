@@ -18,6 +18,7 @@ struct PluginHandle {
     void* module = nullptr;
     std::string name;
     std::optional<PluginApi_v1> plugin_api_v1;
+    bool started = false;
     bool unload_requested = false;
 };
 
