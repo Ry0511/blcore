@@ -2,6 +2,7 @@
 #define BLCORE_UTIL_HOOK_H
 
 #include "blcore/api/hook.h"
+#include "blcore/util/logging.h"
 
 #include <string_view>
 #include <type_traits>
@@ -59,6 +60,17 @@ bool install(void* target, Fn detour, Fn* original = nullptr) {
         return false;
     }
 
+    return true;
+}
+
+template <FunctionPointer Fn>
+bool install(std::string_view name, void* target, Fn detour, Fn* original = nullptr) {
+    if (!install(target, detour, original)) {
+        BLCORE_ERROR("Failed to hook {}", name);
+        return false;
+    }
+
+    BLCORE_INFO("Hooked {} at {}", name, target);
     return true;
 }
 
