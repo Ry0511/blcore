@@ -4,13 +4,13 @@
 #include "blcore/api/gmalloc.h"
 #include "blcore/api/gnames.h"
 #include "blcore/api/gobjects.h"
-#include "blcore/api/static_find_object.h"
-#include "blcore/api/static_load_object.h"
 #include "blcore/blcore.h"
 #include "blcore/engine/gmalloc.h"
 #include "blcore/engine/gnames.h"
 #include "blcore/engine/gobjects.h"
 #include "blcore/engine/object.h"
+#include "blcore/plugin/engine_api_v1.h"
+#include "blcore/plugin/plugin.h"
 #include "blcore/ue3/mapping/fwd.h"
 #include "blcore/ue3/uobject/uclass.h"
 
@@ -34,11 +34,15 @@ inline ue3::UObject* static_find_object(
     const wchar_t* name,
     bool exact_class = false
 ) {
-    return blcore_static_find_object(cls, outer, name, exact_class ? 1U : 0U);
+    const auto static_find_object = engine_api().static_find_object;
+    if (static_find_object == nullptr) {
+        return nullptr;
+    }
+    return static_find_object(cls, outer, name, exact_class ? 1U : 0U);
 }
 
 inline void* static_find_object_address() {
-    return blcore_get_static_find_object();
+    return engine_api().static_find_object_address;
 }
 
 inline ue3::UObject* static_load_object(
@@ -50,7 +54,11 @@ inline ue3::UObject* static_load_object(
     ue3::UObject* sandbox = nullptr,
     bool allow_object_reconciliation = true
 ) {
-    return blcore_static_load_object(
+    const auto static_load_object = engine_api().static_load_object;
+    if (static_load_object == nullptr) {
+        return nullptr;
+    }
+    return static_load_object(
         cls,
         outer,
         name,
@@ -62,7 +70,7 @@ inline ue3::UObject* static_load_object(
 }
 
 inline void* static_load_object_address() {
-    return blcore_get_static_load_object();
+    return engine_api().static_load_object_address;
 }
 
 inline ue3::UObject* find_object(const wchar_t* path) {
