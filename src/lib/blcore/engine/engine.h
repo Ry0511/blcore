@@ -1,15 +1,13 @@
 #ifndef BLCORE_ENGINE_ENGINE_H
 #define BLCORE_ENGINE_ENGINE_H
 
-#include "blcore/api/gmalloc.h"
-#include "blcore/api/gnames.h"
-#include "blcore/api/gobjects.h"
 #include "blcore/blcore.h"
 #include "blcore/engine/gmalloc.h"
 #include "blcore/engine/gnames.h"
 #include "blcore/engine/gobjects.h"
 #include "blcore/engine/object.h"
 #include "blcore/plugin/engine_api_v1.h"
+#include "blcore/plugin/globals_api_v1.h"
 #include "blcore/plugin/plugin.h"
 #include "blcore/ue3/mapping/fwd.h"
 #include "blcore/ue3/uobject/uclass.h"
@@ -17,15 +15,18 @@
 namespace blcore::engine {
 
 inline GObjects gobjects() {
-    return GObjects{blcore_get_gobjects()};
+    const auto gobjects = globals_api().gobjects;
+    return GObjects{gobjects != nullptr ? gobjects() : nullptr};
 }
 
 inline GNames gnames() {
-    return GNames{blcore_get_gnames()};
+    const auto gnames = globals_api().gnames;
+    return GNames{gnames != nullptr ? gnames() : nullptr};
 }
 
 inline GMalloc gmalloc() {
-    return GMalloc{blcore_get_gmalloc()};
+    const auto gmalloc = globals_api().gmalloc;
+    return GMalloc{gmalloc != nullptr ? gmalloc() : nullptr};
 }
 
 inline ue3::UObject* static_find_object(

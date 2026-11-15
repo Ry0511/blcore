@@ -8,10 +8,12 @@ namespace blcore {
 struct PluginHandle;
 struct PluginApi_v1;
 struct EngineApi_v1;
+struct GlobalsApi_v1;
 
 ApiResult register_api(PluginHandle* handle, const PluginApi_v1& api);
 
 const EngineApi_v1& engine_api();
+const GlobalsApi_v1& globals_api();
 
 }  // namespace blcore
 
