@@ -13,6 +13,13 @@ namespace blcore::game {
 class Game {
    public:
     using StaticFindObjectFn = ue3::UObject*(__cdecl*)(ue3::UClass*, ue3::UObject*, const wchar_t*, uint32_t);
+    using StaticLoadObjectFn = ue3::UObject*(__cdecl*)(ue3::UClass*,
+                                                       ue3::UObject*,
+                                                       const wchar_t*,
+                                                       const wchar_t*,
+                                                       uint32_t,
+                                                       ue3::UObject*,
+                                                       uint32_t);
 
     virtual ~Game() = default;
 
@@ -27,6 +34,7 @@ class Game {
     [[nodiscard]] virtual engine::GMalloc gmalloc() const = 0;
 
     [[nodiscard]] virtual StaticFindObjectFn static_find_object() const = 0;
+    [[nodiscard]] virtual StaticLoadObjectFn static_load_object() const = 0;
 
    private:
     virtual void find_globals() = 0;

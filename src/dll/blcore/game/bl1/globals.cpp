@@ -65,6 +65,30 @@ constexpr auto STATIC_FIND_OBJECT_SIG = hat::compile_signature<
     " 8B 7C 24 ??"        // mov edi, [esp + 0x50] (Name)
     >();
 
+constexpr auto STATIC_LOAD_OBJECT_SIG = hat::compile_signature<
+    " 55"                 // push ebp
+    " 8B EC"              // mov ebp, esp
+    " 6A FF"              // push -1
+    " 68 ?? ?? ?? ??"     // push handler
+    " 64 A1 00 00 00 00"  // mov eax, fs:[0]
+    " 50"                 // push eax
+    " 83 EC 68"           // sub esp, 0x68
+    " 53"                 // push ebx
+    " 56"                 // push esi
+    " 57"                 // push edi
+    " A1 ?? ?? ?? ??"     // mov eax, [security_cookie]
+    " 33 C5"              // xor eax, ebp
+    " 50"                 // push eax
+    " 8D 45 F4"           // lea eax, [ebp - 0xc]
+    " 64 A3 00 00 00 00"  // mov fs:[0], eax
+    " 89 65 F0"           // mov [ebp - 0x10], esp
+    " 8B 75 10"           // mov esi, [ebp + 0x10] (Name)
+    " 33 FF"              // xor edi, edi
+    " 89 7D EC"           // mov [ebp - 0x14], edi
+    " 3B F7"              // cmp esi, edi
+    " 74"                 // jz
+    >();
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -87,6 +111,9 @@ void GameImpl::find_globals() {
     m_StaticFindObject = reinterpret_cast<StaticFindObjectFn>(
         sigscan::find("StaticFindObject", STATIC_FIND_OBJECT_SIG)
     );
+    m_StaticLoadObject = reinterpret_cast<StaticLoadObjectFn>(
+        sigscan::find("StaticLoadObject", STATIC_LOAD_OBJECT_SIG)
+    );
 }
 
 engine::GObjects GameImpl::gobjects() const {
@@ -103,6 +130,10 @@ engine::GMalloc GameImpl::gmalloc() const {
 
 Game::StaticFindObjectFn GameImpl::static_find_object() const {
     return m_StaticFindObject;
+}
+
+Game::StaticLoadObjectFn GameImpl::static_load_object() const {
+    return m_StaticLoadObject;
 }
 
 }  // namespace blcore::game::bl1

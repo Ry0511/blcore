@@ -5,6 +5,7 @@
 #include "blcore/api/gnames.h"
 #include "blcore/api/gobjects.h"
 #include "blcore/api/static_find_object.h"
+#include "blcore/api/static_load_object.h"
 #include "blcore/blcore.h"
 #include "blcore/engine/gmalloc.h"
 #include "blcore/engine/gnames.h"
@@ -40,6 +41,30 @@ inline void* static_find_object_address() {
     return blcore_get_static_find_object();
 }
 
+inline ue3::UObject* static_load_object(
+    ue3::UClass* cls,
+    ue3::UObject* outer,
+    const wchar_t* name,
+    const wchar_t* filename = nullptr,
+    uint32_t load_flags = 0,
+    ue3::UObject* sandbox = nullptr,
+    bool allow_object_reconciliation = true
+) {
+    return blcore_static_load_object(
+        cls,
+        outer,
+        name,
+        filename,
+        load_flags,
+        sandbox,
+        allow_object_reconciliation ? 1U : 0U
+    );
+}
+
+inline void* static_load_object_address() {
+    return blcore_get_static_load_object();
+}
+
 inline ue3::UObject* find_object(const wchar_t* path) {
     return static_find_object(nullptr, nullptr, path);
 }
@@ -47,6 +72,11 @@ inline ue3::UObject* find_object(const wchar_t* path) {
 template <typename T = ue3::UObject>
 T* find_object(ue3::UClass* cls, const wchar_t* path) {
     return static_cast<T*>(static_find_object(cls, nullptr, path));
+}
+
+template <typename T = ue3::UObject>
+T* load_object(ue3::UClass* cls, const wchar_t* path, uint32_t load_flags = 0) {
+    return static_cast<T*>(static_load_object(cls, nullptr, path, nullptr, load_flags));
 }
 
 inline ue3::UClass* find_class(const wchar_t* path) {
