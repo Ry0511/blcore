@@ -18,6 +18,14 @@
 #define BLCORE_API_FN(ret, name, ...) \
     extern "C" BLCORE_API ret BLCORE_CALL name(__VA_ARGS__) noexcept(false)
 
+#define BLCORE_API_TRY(call)                                      \
+    do {                                                          \
+        const ::blcore::ApiResult blcore_api_try_result = (call); \
+        if (blcore_api_try_result != ::blcore::API_OK) {          \
+            return blcore_api_try_result;                         \
+        }                                                         \
+    } while (false)
+
 // NOLINTEND(cppcoreguidelines-macro-usage)
 
 namespace blcore {

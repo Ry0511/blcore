@@ -13,15 +13,10 @@ GlobalsApi_v1 _globals_api{};
 }  // namespace
 
 ApiResult register_api(PluginHandle* handle, const PluginApi_v1& api) {
-    const ApiResult result = blcore_register_plugin_api_v1(handle, &api);
-    if (result != API_OK) {
-        return result;
-    }
-    const ApiResult engine_result = blcore_get_engine_api_v1(handle, &_engine_api);
-    if (engine_result != API_OK) {
-        return engine_result;
-    }
-    return blcore_get_globals_api_v1(handle, &_globals_api);
+    BLCORE_API_TRY(blcore_register_plugin_api_v1(handle, &api));
+    BLCORE_API_TRY(blcore_get_engine_api_v1(handle, &_engine_api));
+    BLCORE_API_TRY(blcore_get_globals_api_v1(handle, &_globals_api));
+    return API_OK;
 }
 
 const EngineApi_v1& engine_api() {
