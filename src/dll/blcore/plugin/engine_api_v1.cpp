@@ -8,18 +8,28 @@ namespace blcore {
 
 namespace {
 
+using StaticFindObjectFn = ue3::UObject*(__cdecl*)(ue3::UClass*, ue3::UObject*, const wchar_t*, uint32_t);
+
+using StaticLoadObjectFn = ue3::UObject*(__cdecl*)(ue3::UClass*,
+                                                   ue3::UObject*,
+                                                   const wchar_t*,
+                                                   const wchar_t*,
+                                                   uint32_t,
+                                                   ue3::UObject*,
+                                                   uint32_t);
+
 ue3::UObject* BLCORE_CALL static_find_object(
     ue3::UClass* cls,
     ue3::UObject* outer,
     const wchar_t* name,
     uint32_t exact_class
 ) noexcept(false) {
-    const auto static_find_object = game::current().static_find_object();
-    if (static_find_object == nullptr) {
+    void* address = game::current().engine_functions().static_find_object;
+    if (address == nullptr) {
         BLCORE_ERROR("failed to find StaticFindObject");
         return nullptr;
     }
-    return static_find_object(cls, outer, name, exact_class);
+    return reinterpret_cast<StaticFindObjectFn>(address)(cls, outer, name, exact_class);
 }
 
 ue3::UObject* BLCORE_CALL static_load_object(
@@ -31,12 +41,12 @@ ue3::UObject* BLCORE_CALL static_load_object(
     ue3::UObject* sandbox,
     uint32_t allow_object_reconciliation
 ) noexcept(false) {
-    const auto static_load_object = game::current().static_load_object();
-    if (static_load_object == nullptr) {
+    void* address = game::current().engine_functions().static_load_object;
+    if (address == nullptr) {
         BLCORE_ERROR("failed to find StaticLoadObject");
         return nullptr;
     }
-    return static_load_object(
+    return reinterpret_cast<StaticLoadObjectFn>(address)(
         cls,
         outer,
         name,
@@ -62,12 +72,12 @@ BLCORE_API_FN(
         return blcore::API_FAIL;
     }
 
-    const blcore::game::Game& game = blcore::game::current();
+    const blcore::game::EngineFunctions& functions = blcore::game::current().engine_functions();
     *out = blcore::EngineApi_v1{
         .static_find_object = &blcore::static_find_object,
-        .static_find_object_address = reinterpret_cast<void*>(game.static_find_object()),
+        .static_find_object_address = functions.static_find_object,
         .static_load_object = &blcore::static_load_object,
-        .static_load_object_address = reinterpret_cast<void*>(game.static_load_object()),
+        .static_load_object_address = functions.static_load_object,
     };
     return blcore::API_OK;
 }

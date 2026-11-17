@@ -99,12 +99,8 @@ void GameImpl::find_globals() {
     );
     m_GMalloc = sigscan::find_absolute_address<ue3::FMalloc*>("GMalloc", GMALLOC_SIG, GMALLOC_OFFSET);
     m_GNatives = sigscan::find_absolute_address("GNatives", GNATIVES_SIG, GNATIVES_OFFSET);
-    m_StaticFindObject = reinterpret_cast<StaticFindObjectFn>(
-        sigscan::find("StaticFindObject", STATIC_FIND_OBJECT_SIG)
-    );
-    m_StaticLoadObject = reinterpret_cast<StaticLoadObjectFn>(
-        sigscan::find("StaticLoadObject", STATIC_LOAD_OBJECT_SIG)
-    );
+    m_EngineFunctions.static_find_object = sigscan::find("StaticFindObject", STATIC_FIND_OBJECT_SIG);
+    m_EngineFunctions.static_load_object = sigscan::find("StaticLoadObject", STATIC_LOAD_OBJECT_SIG);
 }
 
 engine::GObjects GameImpl::gobjects() const {
@@ -119,12 +115,8 @@ engine::GMalloc GameImpl::gmalloc() const {
     return engine::GMalloc{m_GMalloc};
 }
 
-Game::StaticFindObjectFn GameImpl::static_find_object() const {
-    return m_StaticFindObject;
-}
-
-Game::StaticLoadObjectFn GameImpl::static_load_object() const {
-    return m_StaticLoadObject;
+const EngineFunctions& GameImpl::engine_functions() const {
+    return m_EngineFunctions;
 }
 
 }  // namespace blcore::game::bl1e

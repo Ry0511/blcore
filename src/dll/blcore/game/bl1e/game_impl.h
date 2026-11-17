@@ -16,8 +16,7 @@ class GameImpl final : public Game {
     [[nodiscard]] engine::GNames gnames() const override;
     [[nodiscard]] engine::GMalloc gmalloc() const override;
 
-    [[nodiscard]] StaticFindObjectFn static_find_object() const override;
-    [[nodiscard]] StaticLoadObjectFn static_load_object() const override;
+    [[nodiscard]] const EngineFunctions& engine_functions() const override;
 
    private:
     void find_globals() override;
@@ -27,8 +26,7 @@ class GameImpl final : public Game {
     ue3::TArray<ue3::FNameEntry*>* m_GNames{nullptr};
     ue3::FMalloc** m_GMalloc{nullptr};
     void** m_GNatives{nullptr};
-    StaticFindObjectFn m_StaticFindObject{nullptr};
-    StaticLoadObjectFn m_StaticLoadObject{nullptr};
+    EngineFunctions m_EngineFunctions;
 };
 
 }  // namespace blcore::game::bl1e
