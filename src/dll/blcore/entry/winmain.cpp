@@ -22,21 +22,21 @@ namespace {
 
 using IsDebuggerPresentFn = BOOL(WINAPI*)();
 
-HMODULE blcore_module = nullptr;
-IsDebuggerPresentFn original_is_debugger_present = nullptr;
-std::atomic_bool plugins_loaded{false};
-std::recursive_mutex api_mutex;
+HMODULE _blcore_module = nullptr;
+IsDebuggerPresentFn _original_is_debugger_present = nullptr;
+std::atomic_bool _plugins_loaded{false};
+std::recursive_mutex _api_mutex;
 
 BOOL WINAPI is_debugger_present_hook() {
-    if (plugins_loaded) {
-        return original_is_debugger_present();
+    if (_plugins_loaded) {
+        return _original_is_debugger_present();
     }
 
-    const std::scoped_lock lock{api_mutex};
-    if (!plugins_loaded && game::current().is_unpacked()) {
-        plugins_loaded = true;
+    const std::scoped_lock lock{_api_mutex};
+    if (!_plugins_loaded && game::current().is_unpacked()) {
+        _plugins_loaded = true;
         try {
-            const fs::path dir = util::module_dir(blcore_module);
+            const fs::path dir = util::module_dir(_blcore_module);
             logging::set_console_logging(false);
             logging::add_log_file(dir / "blcore.log");
             logging::initialise();
@@ -47,7 +47,7 @@ BOOL WINAPI is_debugger_present_hook() {
         }
     }
 
-    return original_is_debugger_present();
+    return _original_is_debugger_present();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,21 +56,21 @@ BOOL WINAPI is_debugger_present_hook() {
 
 using ExitProcessFn = void(WINAPI*)(UINT exit_code);
 
-ExitProcessFn original_exit_process = nullptr;
-std::atomic_bool shutting_down{false};
+ExitProcessFn _original_exit_process = nullptr;
+std::atomic_bool _shutting_down{false};
 
 void WINAPI exit_process_hook(UINT exit_code) {
-    if (!shutting_down.exchange(true)) {
+    if (!_shutting_down.exchange(true)) {
         BLCORE_INFO("Shutting down");
         {
-            const std::scoped_lock lock{api_mutex};
+            const std::scoped_lock lock{_api_mutex};
             game::current().shutdown();
         }
         // we do this in detach as well, its better to do it here but both places don't hurt
         logging::terminate(true);
     }
 
-    original_exit_process(exit_code);
+    _original_exit_process(exit_code);
 }
 
 void detach() {
@@ -91,7 +91,7 @@ MH_STATUS hook_kernel32(const char* name, void* detour, void** original) {
 }
 
 void install_hooks(HMODULE h_module) {
-    blcore_module = h_module;
+    _blcore_module = h_module;
 
     const MH_STATUS init = MH_Initialize();
     if (init != MH_OK && init != MH_ERROR_ALREADY_INITIALIZED) {
@@ -106,7 +106,7 @@ void install_hooks(HMODULE h_module) {
     MH_STATUS status = hook_kernel32(
         "IsDebuggerPresent",
         reinterpret_cast<void*>(&is_debugger_present_hook),
-        reinterpret_cast<void**>(&original_is_debugger_present)
+        reinterpret_cast<void**>(&_original_is_debugger_present)
     );
     if (status != MH_OK) {
         BLCORE_ERROR(
@@ -121,7 +121,7 @@ void install_hooks(HMODULE h_module) {
     status = hook_kernel32(
         "ExitProcess",
         reinterpret_cast<void*>(&exit_process_hook),
-        reinterpret_cast<void**>(&original_exit_process)
+        reinterpret_cast<void**>(&_original_exit_process)
     );
     if (status != MH_OK) {
         BLCORE_ERROR(

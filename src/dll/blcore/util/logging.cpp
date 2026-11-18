@@ -17,17 +17,17 @@ struct Message {
     std::string msg;
 };
 
-std::mutex queue_mutex;
-std::condition_variable queue_cv;
-std::vector<Message> message_queue;
-std::atomic_bool stopping{false};
-std::atomic_bool stopped{false};
+std::mutex _queue_mutex;
+std::condition_variable _queue_cv;
+std::vector<Message> _message_queue;
+std::atomic_bool _stopping{false};
+std::atomic_bool _stopped{false};
 
-std::mutex sinks_mutex;
-std::vector<std::ofstream> files;
-std::optional<WinConsole> console;
+std::mutex _sinks_mutex;
+std::vector<std::ofstream> _files;
+std::optional<WinConsole> _console;
 
-std::atomic_bool initialised{false};
+std::atomic_bool _initialised{false};
 
 ////////////////////////////////////////////////////////////////////////////////
 // | FORMATTING |
@@ -90,15 +90,15 @@ void format_message(std::string& out, const Message& message) {
 ////////////////////////////////////////////////////////////////////////////////
 
 void write_raw_text(const std::string& text) {
-    const std::scoped_lock lock{sinks_mutex};
+    const std::scoped_lock lock{_sinks_mutex};
 
-    for (auto& file : files) {
+    for (auto& file : _files) {
         file.write(text.data(), static_cast<std::streamsize>(text.size()));
         file.flush();
     }
 
-    if (console) {
-        console->write(text);
+    if (_console) {
+        _console->write(text);
     }
 }
 
@@ -109,14 +109,14 @@ void logger_thread() {
     while (true) {
         bool stop = false;
         {
-            std::unique_lock lock{queue_mutex};
-            queue_cv.wait_for(
+            std::unique_lock lock{_queue_mutex};
+            _queue_cv.wait_for(
                 lock,
                 std::chrono::milliseconds{100},
-                [] { return stopping || !message_queue.empty(); }
+                [] { return _stopping || !_message_queue.empty(); }
             );
-            stop = stopping;
-            local_queue.swap(message_queue);
+            stop = _stopping;
+            local_queue.swap(_message_queue);
         }
 
         local_text.clear();
@@ -145,25 +145,25 @@ void logger_thread() {
     }
 
     {
-        const std::scoped_lock lock{sinks_mutex};
-        files.clear();
-        console.reset();
+        const std::scoped_lock lock{_sinks_mutex};
+        _files.clear();
+        _console.reset();
     }
 
-    stopped = true;
-    stopped.notify_all();
+    _stopped = true;
+    _stopped.notify_all();
 }
 
 void enqueue(Level level, std::string&& msg) {
     {
-        const std::scoped_lock lock{queue_mutex};
-        message_queue.push_back({
+        const std::scoped_lock lock{_queue_mutex};
+        _message_queue.push_back({
             .time = clock::now(),
             .level = level,
             .msg = std::move(msg),
         });
     }
-    queue_cv.notify_one();
+    _queue_cv.notify_one();
 }
 
 }  // namespace
@@ -173,34 +173,34 @@ void enqueue(Level level, std::string&& msg) {
 ////////////////////////////////////////////////////////////////////////////////
 
 void initialise() {
-    if (initialised.exchange(true)) {
+    if (_initialised.exchange(true)) {
         return;
     }
 
-    stopping = false;
-    stopped = false;
+    _stopping = false;
+    _stopped = false;
     std::thread{&logger_thread}.detach();
 }
 
 void terminate(bool wait) {
-    if (!initialised.exchange(false)) {
+    if (!_initialised.exchange(false)) {
         return;
     }
 
-    stopping = true;
-    queue_cv.notify_one();
+    _stopping = true;
+    _queue_cv.notify_one();
 
     if (wait) {
-        stopped.wait(false);
+        _stopped.wait(false);
     }
 }
 
 void set_console_logging(bool enabled) {
-    const std::scoped_lock lock{sinks_mutex};
+    const std::scoped_lock lock{_sinks_mutex};
     if (!enabled) {
-        console.reset();
-    } else if (!console) {
-        console.emplace();
+        _console.reset();
+    } else if (!_console) {
+        _console.emplace();
     }
 }
 
@@ -211,8 +211,8 @@ void add_log_file(const fs::path& out, bool append) {
         return;
     }
 
-    const std::scoped_lock lock{sinks_mutex};
-    files.push_back(std::move(file));
+    const std::scoped_lock lock{_sinks_mutex};
+    _files.push_back(std::move(file));
 }
 
 }  // namespace blcore::logging

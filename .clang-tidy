@@ -63,8 +63,8 @@ CheckOptions:
   readability-identifier-naming.EnumConstantCase: UPPER_CASE
 
   readability-identifier-naming.VariableCase: lower_case
-  readability-identifier-naming.GlobalVariableCase: CamelCase
-  readability-identifier-naming.GlobalVariablePrefix: g_
+  readability-identifier-naming.GlobalVariableCase: lower_case
+  readability-identifier-naming.GlobalVariablePrefix: _
 
   readability-identifier-naming.GlobalConstantCase: lower_case
   readability-identifier-naming.GlobalConstantIgnoredRegexp: '^[A-Z][A-Z0-9_]*$'
