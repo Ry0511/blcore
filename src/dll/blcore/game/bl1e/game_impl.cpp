@@ -35,4 +35,8 @@ bool GameImpl::is_unpacked() const {
     return hat::find_pattern(ENTRY_SIG, ".text").has_result();
 }
 
+void GameImpl::initialise() {
+    find_globals();
+}
+
 }  // namespace blcore::game::bl1e

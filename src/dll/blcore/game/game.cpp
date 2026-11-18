@@ -7,8 +7,7 @@ namespace blcore::game {
 
 void Game::start(const fs::path& plugin_dir) {
     BLCORE_INFO("Starting for {}", name());
-    find_globals();
-    apply_patches();
+    initialise();
     m_Plugins.load(plugin_dir);
 }
 

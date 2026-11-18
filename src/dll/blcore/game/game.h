@@ -31,8 +31,7 @@ class Game {
     [[nodiscard]] virtual const EngineFunctions& engine_functions() const = 0;
 
    private:
-    virtual void find_globals() = 0;
-    virtual void apply_patches() const = 0;
+    virtual void initialise() = 0;
 
     PluginRuntime m_Plugins;
 };

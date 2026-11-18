@@ -47,7 +47,7 @@ void patch_sha_verification() {
 // | PUBLIC |
 ////////////////////////////////////////////////////////////////////////////////
 
-void GameImpl::apply_patches() const {
+void GameImpl::apply_patches() {
     patch_sha_verification();
 }
 

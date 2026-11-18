@@ -19,8 +19,9 @@ class GameImpl final : public Game {
     [[nodiscard]] const EngineFunctions& engine_functions() const override;
 
    private:
-    void find_globals() override;
-    void apply_patches() const override;
+    void initialise() override;
+    void find_globals();
+    static void apply_patches();
 
     ue3::TArray<ue3::UObject*>* m_GObjects{nullptr};
     ue3::TArray<ue3::FNameEntry*>* m_GNames{nullptr};
