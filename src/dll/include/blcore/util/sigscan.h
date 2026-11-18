@@ -32,7 +32,7 @@ void* find(std::string_view name, const Signature& signature, size_t offset = 0)
 }
 
 template <typename T = void*, typename Signature>
-T* find_absolute_address(std::string_view name, const Signature& signature, size_t offset) {
+T* find_global(std::string_view name, const Signature& signature, size_t offset) {
     const auto result = hat::find_pattern(signature, ".text");
     if (!result.has_result()) {
         BLCORE_ERROR("Failed to find {}", name);
@@ -40,17 +40,20 @@ T* find_absolute_address(std::string_view name, const Signature& signature, size
     }
 
     const std::byte* operand = result.get() + offset;
-    uintptr_t value{0};
+    T* address{nullptr};
+
     if constexpr (sizeof(uintptr_t) == sizeof(uint64_t)) {
         int32_t displacement{0};
-        constexpr auto displacement_size = sizeof(uint32_t);
-        std::memcpy(&displacement, operand, displacement_size);
-        value = reinterpret_cast<uintptr_t>(operand) + displacement_size + displacement;
+        std::memcpy(&displacement, operand, sizeof(displacement));
+        auto addr = reinterpret_cast<uintptr_t>(operand) + sizeof(displacement) + displacement;
+        address = reinterpret_cast<T*>(addr);
+
     } else {
-        std::memcpy(&value, operand, sizeof(value));
+        uintptr_t addr{0};
+        std::memcpy(&addr, operand, sizeof(addr));
+        address = reinterpret_cast<T*>(addr);
     }
 
-    auto* address = reinterpret_cast<T*>(value);
     BLCORE_INFO("Found {} at {}", name, static_cast<const void*>(address));
     return address;
 }

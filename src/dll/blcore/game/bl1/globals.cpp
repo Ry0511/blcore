@@ -95,18 +95,18 @@ constexpr auto STATIC_LOAD_OBJECT_SIG = hat::compile_signature<
 ////////////////////////////////////////////////////////////////////////////////
 
 void GameImpl::find_globals() {
-    m_GObjects = sigscan::find_absolute_address<ue3::TArray<ue3::UObject*>>(
+    m_GObjects = sigscan::find_global<ue3::TArray<ue3::UObject*>>(
         "GObjects",
         GOBJECTS_SIG,
         GOBJECTS_OFFSET
     );
-    m_GNames = sigscan::find_absolute_address<ue3::TArray<ue3::FNameEntry*>>(
+    m_GNames = sigscan::find_global<ue3::TArray<ue3::FNameEntry*>>(
         "GNames",
         GNAMES_SIG,
         GNAMES_OFFSET
     );
-    m_GMalloc = sigscan::find_absolute_address<ue3::FMalloc*>("GMalloc", GMALLOC_SIG, GMALLOC_OFFSET);
-    m_GNatives = sigscan::find_absolute_address("GNatives", GNATIVES_SIG, GNATIVES_OFFSET);
+    m_GMalloc = sigscan::find_global<ue3::FMalloc*>("GMalloc", GMALLOC_SIG, GMALLOC_OFFSET);
+    m_GNatives = sigscan::find_global("GNatives", GNATIVES_SIG, GNATIVES_OFFSET);
     m_EngineFunctions.static_find_object = sigscan::find("StaticFindObject", STATIC_FIND_OBJECT_SIG);
     m_EngineFunctions.static_load_object = sigscan::find("StaticLoadObject", STATIC_LOAD_OBJECT_SIG);
 }
