@@ -9,15 +9,15 @@ namespace blcore {
 namespace {
 
 ue3::TArray<ue3::UObject*>* BLCORE_CALL gobjects() noexcept(false) {
-    return game::current().gobjects().data();
+    return static_cast<ue3::TArray<ue3::UObject*>*>(game::current().address_table().gobjects);
 }
 
 ue3::TArray<ue3::FNameEntry*>* BLCORE_CALL gnames() noexcept(false) {
-    return game::current().gnames().data();
+    return static_cast<ue3::TArray<ue3::FNameEntry*>*>(game::current().address_table().gnames);
 }
 
 ue3::FMalloc** BLCORE_CALL gmalloc() noexcept(false) {
-    return game::current().gmalloc().data();
+    return static_cast<ue3::FMalloc**>(game::current().address_table().gmalloc);
 }
 
 }  // namespace

@@ -87,36 +87,16 @@ constexpr auto STATIC_LOAD_OBJECT_SIG = hat::compile_signature<
 ////////////////////////////////////////////////////////////////////////////////
 
 void GameImpl::find_globals() {
-    m_GObjects = sigscan::find_global<ue3::TArray<ue3::UObject*>>(
-        "GObjects",
-        GOBJECTS_SIG,
-        GOBJECTS_OFFSET
-    );
-    m_GNames = sigscan::find_global<ue3::TArray<ue3::FNameEntry*>>(
-        "GNames",
-        GNAMES_SIG,
-        GNAMES_OFFSET
-    );
-    m_GMalloc = sigscan::find_global<ue3::FMalloc*>("GMalloc", GMALLOC_SIG, GMALLOC_OFFSET);
-    m_GNatives = sigscan::find_global("GNatives", GNATIVES_SIG, GNATIVES_OFFSET);
-    m_EngineFunctions.static_find_object = sigscan::find("StaticFindObject", STATIC_FIND_OBJECT_SIG);
-    m_EngineFunctions.static_load_object = sigscan::find("StaticLoadObject", STATIC_LOAD_OBJECT_SIG);
+    m_AddressTable.gobjects = sigscan::find_global<void>("GObjects", GOBJECTS_SIG, GOBJECTS_OFFSET);
+    m_AddressTable.gnames = sigscan::find_global<void>("GNames", GNAMES_SIG, GNAMES_OFFSET);
+    m_AddressTable.gmalloc = sigscan::find_global<void>("GMalloc", GMALLOC_SIG, GMALLOC_OFFSET);
+    m_AddressTable.gnatives = sigscan::find_global<void>("GNatives", GNATIVES_SIG, GNATIVES_OFFSET);
+    m_AddressTable.static_find_object = sigscan::find("StaticFindObject", STATIC_FIND_OBJECT_SIG);
+    m_AddressTable.static_load_object = sigscan::find("StaticLoadObject", STATIC_LOAD_OBJECT_SIG);
 }
 
-engine::GObjects GameImpl::gobjects() const {
-    return engine::GObjects{m_GObjects};
-}
-
-engine::GNames GameImpl::gnames() const {
-    return engine::GNames{m_GNames};
-}
-
-engine::GMalloc GameImpl::gmalloc() const {
-    return engine::GMalloc{m_GMalloc};
-}
-
-const EngineFunctions& GameImpl::engine_functions() const {
-    return m_EngineFunctions;
+const AddressTable& GameImpl::address_table() const {
+    return m_AddressTable;
 }
 
 }  // namespace blcore::game::bl1e

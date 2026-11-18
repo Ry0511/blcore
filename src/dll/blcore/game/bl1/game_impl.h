@@ -2,8 +2,6 @@
 #define BLCORE_GAME_BL1_GAME_IMPL_H
 
 #include "blcore/game/game.h"
-#include "blcore/ue3/mapping/fwd.h"
-#include "blcore/ue3/tarray.h"
 
 namespace blcore::game::bl1 {
 
@@ -12,22 +10,14 @@ class GameImpl final : public Game {
     [[nodiscard]] std::string_view name() const override;
     [[nodiscard]] bool is_unpacked() const override;
 
-    [[nodiscard]] engine::GObjects gobjects() const override;
-    [[nodiscard]] engine::GNames gnames() const override;
-    [[nodiscard]] engine::GMalloc gmalloc() const override;
-
-    [[nodiscard]] const EngineFunctions& engine_functions() const override;
+    [[nodiscard]] const AddressTable& address_table() const override;
 
    private:
     void initialise() override;
     void find_globals();
     static void apply_patches();
 
-    ue3::TArray<ue3::UObject*>* m_GObjects{nullptr};
-    ue3::TArray<ue3::FNameEntry*>* m_GNames{nullptr};
-    ue3::FMalloc** m_GMalloc{nullptr};
-    void** m_GNatives{nullptr};
-    EngineFunctions m_EngineFunctions;
+    AddressTable m_AddressTable;
 };
 
 }  // namespace blcore::game::bl1

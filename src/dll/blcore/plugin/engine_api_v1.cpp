@@ -24,7 +24,7 @@ ue3::UObject* BLCORE_CALL static_find_object(
     const wchar_t* name,
     uint32_t exact_class
 ) noexcept(false) {
-    void* address = game::current().engine_functions().static_find_object;
+    void* address = game::current().address_table().static_find_object;
     if (address == nullptr) {
         BLCORE_ERROR("failed to find StaticFindObject");
         return nullptr;
@@ -41,7 +41,7 @@ ue3::UObject* BLCORE_CALL static_load_object(
     ue3::UObject* sandbox,
     uint32_t allow_object_reconciliation
 ) noexcept(false) {
-    void* address = game::current().engine_functions().static_load_object;
+    void* address = game::current().address_table().static_load_object;
     if (address == nullptr) {
         BLCORE_ERROR("failed to find StaticLoadObject");
         return nullptr;
@@ -72,12 +72,12 @@ BLCORE_API_FN(
         return blcore::API_FAIL;
     }
 
-    const blcore::game::EngineFunctions& functions = blcore::game::current().engine_functions();
+    const blcore::game::AddressTable& table = blcore::game::current().address_table();
     *out = blcore::EngineApi_v1{
         .static_find_object = &blcore::static_find_object,
-        .static_find_object_address = functions.static_find_object,
+        .static_find_object_address = table.static_find_object,
         .static_load_object = &blcore::static_load_object,
-        .static_load_object_address = functions.static_load_object,
+        .static_load_object_address = table.static_load_object,
     };
     return blcore::API_OK;
 }
