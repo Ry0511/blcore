@@ -14,27 +14,10 @@
 
 namespace blcore {
 
-////////////////////////////////////////////////////////////////////////////////
-// | STARTUP |
-////////////////////////////////////////////////////////////////////////////////
-
 namespace {
 
-DWORD WINAPI startup_thread(LPVOID h_module) {
-    // TODO: need to revisit this one, just threw something together quickly but its got its own issues
-    logging::set_console_logging(false);
-    logging::add_log_file(util::module_dir(h_module) / "blcore.log");
-    logging::initialise();
-    logging::log(logging::Level::Info, get_version_string());
-    return 0;
-}
-
-void detach() {
-    logging::terminate();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
-// | PLUGINS |
+// | STARTUP |
 ////////////////////////////////////////////////////////////////////////////////
 
 using IsDebuggerPresentFn = BOOL(WINAPI*)();
@@ -53,7 +36,12 @@ BOOL WINAPI is_debugger_present_hook() {
     if (!plugins_loaded && game::current().is_unpacked()) {
         plugins_loaded = true;
         try {
-            game::current().start(util::module_dir(blcore_module) / "blcore");
+            const fs::path dir = util::module_dir(blcore_module);
+            logging::set_console_logging(false);
+            logging::add_log_file(dir / "blcore.log");
+            logging::initialise();
+            logging::log(logging::Level::Info, get_version_string());
+            game::current().start(dir / "blcore");
         } catch (const std::exception& ex) {
             BLCORE_ERROR("Loading plugins failed: {}", ex.what());
         }
@@ -83,6 +71,10 @@ void WINAPI exit_process_hook(UINT exit_code) {
     }
 
     original_exit_process(exit_code);
+}
+
+void detach() {
+    logging::terminate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -153,7 +145,6 @@ BOOL APIENTRY DllMain(HMODULE h_module, DWORD reason, LPVOID /*reserved*/) {
         case DLL_PROCESS_ATTACH: {
             DisableThreadLibraryCalls(h_module);
             blcore::install_hooks(h_module);
-            CreateThread(nullptr, 0, &blcore::startup_thread, h_module, 0, nullptr);
             break;
         }
 
