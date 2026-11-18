@@ -6,7 +6,6 @@
 #include "blcore/engine/gnames.h"
 #include "blcore/engine/gobjects.h"
 #include "blcore/plugin/plugin_runtime.h"
-#include "blcore/ue3/mapping/fwd.h"
 
 namespace blcore::game {
 

@@ -45,7 +45,6 @@ constexpr auto GNATIVES_SIG = hat::compile_signature<
     " 8D 4D ??"              // lea ecx, [ebp - 0x44]
     >();
 
-// UObject* UObject::StaticFindObject(UClass* Class, UObject* InOuter, const TCHAR* Name, UBOOL ExactClass)
 constexpr auto STATIC_FIND_OBJECT_SIG = hat::compile_signature<
     " 6A FF"              // push -1
     " 68 ?? ?? ?? ??"     // push handler
