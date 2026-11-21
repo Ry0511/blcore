@@ -14,7 +14,10 @@ class GameImpl final : public Game {
 
    private:
     void initialise() override;
+
     void find_globals();
+    void find_static_find_object();
+    void find_static_load_object();
 
     AddressTable m_AddressTable;
 };

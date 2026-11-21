@@ -35,8 +35,14 @@ bool GameImpl::is_unpacked() const {
     return hat::find_pattern(ENTRY_SIG, ".text").has_result();
 }
 
+const AddressTable& GameImpl::address_table() const {
+    return m_AddressTable;
+}
+
 void GameImpl::initialise() {
     find_globals();
+    find_static_find_object();
+    find_static_load_object();
 }
 
 }  // namespace blcore::game::bl1e

@@ -31,7 +31,13 @@ constexpr auto SHA_VERIFICATION_SIG = hat::compile_signature<
     " E8"              // call
     >();
 
-void patch_sha_verification() {
+}  // namespace
+
+////////////////////////////////////////////////////////////////////////////////
+// | PUBLIC |
+////////////////////////////////////////////////////////////////////////////////
+
+void GameImpl::apply_sha_bypass() {
     const sigscan::ScanResult sha_verification = sigscan::find_for_rw(SHA_VERIFICATION_SIG);
 
     if (sha_verification.has_result() && sha_verification.write(0, 0xC3)) {
@@ -39,16 +45,6 @@ void patch_sha_verification() {
     }
 
     BLCORE_WARN("failed to patch SHA verification - modified base game script packages will error");
-}
-
-}  // namespace
-
-////////////////////////////////////////////////////////////////////////////////
-// | PUBLIC |
-////////////////////////////////////////////////////////////////////////////////
-
-void GameImpl::apply_patches() {
-    patch_sha_verification();
 }
 
 }  // namespace blcore::game::bl1
