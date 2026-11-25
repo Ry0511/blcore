@@ -1,0 +1,94 @@
+name: release
+
+on:
+  push:
+    tags: [ "v*" ]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Check the tag is on master
+        run: |
+          if ! git merge-base --is-ancestor HEAD origin/master; then
+            echo "::error::$GITHUB_REF_NAME isn't on master"
+            exit 1
+          fi
+
+      - name: Check the tag matches the CMake version
+        id: version
+        run: |
+          version=$(sed -nE 's/^\s*VERSION\s+([0-9.]+).*/\1/p' CMakeLists.txt | head -n 1)
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::tag $GITHUB_REF_NAME doesn't match CMakeLists.txt's VERSION $version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: verify
+    runs-on: windows-2025-vs2026
+    strategy:
+      matrix:
+        include:
+          - arch: x86
+            plugin_dir: Binaries/Plugins
+          - arch: x64
+            plugin_dir: Binaries/Win64/Plugins
+    env:
+      PRESET: msvc-${{ matrix.arch }}-rel
+      ARCHIVE: blcore-${{ needs.verify.outputs.version }}-msvc-${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: ilammy/msvc-dev-cmd@v1.13.0
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Build
+        run: |
+          cmake --preset $env:PRESET
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          cmake --build out/build/$env:PRESET
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          cmake --install out/build/$env:PRESET
+
+      - name: Package
+        run: |
+          $dest = "stage/${{ matrix.plugin_dir }}"
+          New-Item -ItemType Directory -Force $dest | Out-Null
+          Copy-Item out/install/$env:PRESET/blcore.dll, out/install/$env:PRESET/blcore.pdb $dest
+          Compress-Archive -Path stage/* -DestinationPath "$env:ARCHIVE.zip"
+
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ${{ env.ARCHIVE }}
+          path: ${{ env.ARCHIVE }}.zip
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "$GITHUB_REF_NAME" dist/*.zip
+          --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes --title "$GITHUB_REF_NAME"
