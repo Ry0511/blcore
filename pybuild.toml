@@ -5,26 +5,26 @@ exclude = []
 [matrix]
 arch = ["x86", "x64"]
 build = ["dbg", "rel"]
+toolchain = ["msvc"]
 
 [[preset]]
-name = "msvc-{arch}-{build}"
+name = "{toolchain}-{arch}-{build}"
 
 [[variable]]
-when = { build = "dbg" }
-steps = ["setup", "build"]
+key_on = "build"
+steps = [
+    ["dbg", ["setup", "build"]],
+    ["rel", ["setup", "build", "install", "check", "format"]],
+]
 
 [[variable]]
-when = { build = "rel" }
-steps = ["setup", "build", "install", "check", "format"]
-
-[[variable]]
-when = { arch = "x86" }
-plugin_dir = "Binaries/Plugins"
-
-[[variable]]
-when = { arch = "x64" }
-plugin_dir = "Binaries/Win64/Plugins"
+key_on = "arch"
+plugin_dir = [
+    ["x86", "Binaries/Plugins"],
+    ["x64", "Binaries/Win64/Plugins"],
+]
 
 [[package]]
+archive = "{project}-{version}-{toolchain}-{arch}"
 preset = "*-rel"
 files = [{ include = ["blcore.dll", "blcore.pdb"], dest = "{plugin_dir}" }]
